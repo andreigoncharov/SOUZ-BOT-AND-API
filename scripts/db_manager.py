@@ -2,8 +2,8 @@ import asyncio
 
 from pymysql import connect
 import aiomysql
-from scripts.config import *
-from scripts.models import *
+from .config import *
+from .models import *
 import pyodbc
 
 
@@ -20,43 +20,70 @@ def create_sync_con():
 
 
 class RemoteDbManager:
-    mssqlserver_conn_str = 'DRIVER={ODBC Driver 17 for SQL Server};' \
+
+    def __init__(self):
+        self.mssqlserver_conn_str = 'DRIVER={ODBC Driver 17 for SQL Server};' \
                            + f'SERVER={MSSQL_DB_HOST};DATABASE={MSSQL_DB_NAME};UID={MSSQL_DB_USER};' \
                              f'PWD={MSSQL_DB_PASSWORD}'
+        self.conn = None
+        self.conn = self.get_conn()
 
-    @staticmethod
-    async def get_all_expeditors(agent_id, loop):
-        conn = await loop.run_in_executor(None, lambda: pyodbc.connect(RemoteDbManager.mssqlserver_conn_str))
+    def get_conn(self, loop=None):
+        if self.conn:
+            try:
+                cursor = self.conn.cursor()
+                cursor.execute("""SELECT TOP(1) [DateTime]
+,[ExpeditorId]
+,[Expeditor]
+,[CustomerId]
+,[Customer]
+,[Comment]
+,[Order]
+,[Route]
+,[DriverID]
+,[Driver]
+,[AgentID]
+,[DESCR]
+,[TimeStamp]
+,[CheckStatus] from [Orders].[dbo].[{VIEW_NAME}];""")
+                cursor.fetchall()
+                return self.conn
+            except pyodbc.Error as e:
+                conn = pyodbc.connect(self.mssqlserver_conn_str)
+                return conn
+        else:
+            conn = pyodbc.connect(self.mssqlserver_conn_str)
+            return conn
+
+    async def get_all_expeditors(self, agent_id, loop):
+        conn = self.get_conn(loop)
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT DISTINCT [ExpeditorId], [Expeditor] FROM [Orders].[dbo].[{VIEW_NAME}] where TRIM([AgentID]) = '{agent_id}';""")
+        cursor.execute(f"""SELECT DISTINCT [ExpeditorId], [Expeditor] FROM [Orders].[dbo].[{VIEW_NAME}] where LTRIM(RTRIM([AgentID])) = '{agent_id}';""")
         rows = cursor.fetchall()
         conn.close()
         return rows
 
-    @staticmethod
-    async def get_clients(agent_id, loop):
-        conn = await loop.run_in_executor(None, lambda: pyodbc.connect(RemoteDbManager.mssqlserver_conn_str))
+    async def get_clients(self, agent_id, loop):
+        conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT [CustomerID], [Customer], [ExpeditorId], [Expeditor], 
         [DriverID], [Driver], [Route], [TimeStamp], [CheckStatus], [Order]
-        FROM [Orders].[dbo].[{VIEW_NAME}] where TRIM([AgentID]) = '{agent_id}';""")
+        FROM [Orders].[dbo].[{VIEW_NAME}] where LTRIM(RTRIM([AgentID])) = '{agent_id}';""")
         rows = cursor.fetchall()
         conn.close()
         return rows
 
-    @staticmethod
-    async def get_client_names(agent_id, loop):
-        conn = await loop.run_in_executor(None, lambda: pyodbc.connect(RemoteDbManager.mssqlserver_conn_str))
+    async def get_client_names(self, agent_id, loop):
+        conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT [CustomerID], [Customer]
-            FROM [Orders].[dbo].[{VIEW_NAME}] where TRIM([AgentID]) = '{agent_id}';""")
+            FROM [Orders].[dbo].[{VIEW_NAME}] where LTRIM(RTRIM([AgentID])) = '{agent_id}';""")
         rows = cursor.fetchall()
         conn.close()
         return rows
 
-    @staticmethod
-    async def get_client_info(customer_id, loop):
-        conn = await loop.run_in_executor(None, lambda: pyodbc.connect(RemoteDbManager.mssqlserver_conn_str))
+    async def get_client_info(self, customer_id, loop):
+        conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT [CustomerID], [Customer], [ExpeditorId], [Expeditor], 
             [DriverID], [Driver], [Route], [TimeStamp], [CheckStatus], [Order]
@@ -65,19 +92,17 @@ class RemoteDbManager:
         conn.close()
         return rows
 
-    @staticmethod
-    async def get_unique_expeditor_routes_by_agent(agent_id,  loop):
-        conn = await loop.run_in_executor(None, lambda: pyodbc.connect(RemoteDbManager.mssqlserver_conn_str))
+    async def get_unique_expeditor_routes_by_agent(self, agent_id,  loop):
+        conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT DISTINCT [ExpeditorId], [Route]
-                              FROM [Orders].[dbo].[{VIEW_NAME}] where TRIM([AgentId]) = '{agent_id}';""")
+                              FROM [Orders].[dbo].[{VIEW_NAME}] where LTRIM(RTRIM([AgentID])) = '{agent_id}';""")
         rows = cursor.fetchall()
         conn.close()
         return rows
 
-    @staticmethod
-    async def get_expeditor_last_checkin(expeditor_id, route, loop):
-        conn = await loop.run_in_executor(None, lambda: pyodbc.connect(RemoteDbManager.mssqlserver_conn_str))
+    async def get_expeditor_last_checkin(self, expeditor_id, route, loop):
+        conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT 
     [ExpeditorId],
@@ -92,24 +117,22 @@ GROUP BY [ExpeditorId], [Route];
         conn.close()
         return rows
 
-    @staticmethod
-    async def get_expeditor_clients_by_agent(agent_id, expeditor_id, loop):
-        conn = await loop.run_in_executor(None, lambda: pyodbc.connect(RemoteDbManager.mssqlserver_conn_str))
+    async def get_expeditor_clients_by_agent(self, agent_id, expeditor_id, loop):
+        conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT [Expeditor], [CustomerId], [Customer], [Route], [Order], [TimeStamp], [CheckStatus]
 FROM [Orders].[dbo].[{VIEW_NAME}]
-WHERE TRIM([AgentID]) = '{agent_id}' AND TRIM([ExpeditorId])='{expeditor_id}'
+WHERE LTRIM(RTRIM([AgentID])) = '{agent_id}' AND LTRIM(RTRIM([ExpeditorId]))='{expeditor_id}'
 ORDER BY [Route], [Order];""")
         rows = cursor.fetchall()
         conn.close()
         return rows
 
-    @staticmethod
-    async def get_agent_description(agent_id, loop):
-        conn = await loop.run_in_executor(None, lambda: pyodbc.connect(RemoteDbManager.mssqlserver_conn_str))
+    async def get_agent_description(self, agent_id, loop):
+        conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT [ID], [DESCR] FROM [Orders].[dbo].[agent_info]
-WHERE TRIM([ID]) = '{agent_id}';""")
+WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
         rows = cursor.fetchall()
         conn.close()
         return rows

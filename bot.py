@@ -22,11 +22,11 @@ dp = Dispatcher(bot)
 # if DEBUG:
 #     logging.basicConfig(level=logging.DEBUG)
 
-AGENT = 'DWAPO'  # TODO: брать из БД
-
 ADMINS = ['AndreiGoncharov', 'maksym_hryhorovych']
 
 PHONE_MASK = re.compile(r'^380\d{9}$')
+
+RDB = RemoteDbManager()
 
 '''Старт и регистрация'''
 
@@ -85,7 +85,7 @@ async def c_list_def(message):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
-    clients = await RemoteDbManager.get_client_names(AGENT, loop)
+    clients = await RDB.get_client_names(user.id_in_db, loop)
     if len(clients) > 1:
         sorted_clients = []
         for client in clients:
@@ -103,7 +103,7 @@ async def c_list_def(message):
         await bot.send_message(tel_id, msg.clients_list, reply_markup=keyb,
                                disable_notification=True, parse_mode='html')
     else:
-        await bot.send_message(tel_id, msg.no_clients_today, reply_markup=mk.search_keyboard(),
+        await bot.send_message(tel_id, msg.no_clients_today,
                                disable_notification=True, parse_mode='html')
 
 
@@ -111,8 +111,8 @@ async def c_list_def(message):
 async def show_zn_inl(inline_query):
     tel_id = inline_query.from_user.id
     user = await UsersDbManager.get_user(tel_id, loop)
-    clients = await RemoteDbManager.get_clients(AGENT, loop)
-    # expeditors_and_routes = await RemoteDbManager.get_unique_expeditor_routes_by_agent(AGENT, loop)
+    clients = await RDB.get_clients(user.id_in_db, loop)
+    # expeditors_and_routes = await RDB.get_unique_expeditor_routes_by_agent(AGENT, loop)
     sorted_clients = []
     expeditor_routes = []
     for client in clients:
@@ -125,7 +125,7 @@ async def show_zn_inl(inline_query):
                     break
         if client[2] not in expeditor_routes:
             expeditor_routes.append(client[2])
-    # last_checkins = await RemoteDbManager.get_expeditor_last_checkin(', '.join([f"'{id}'" for id in expeditor_routes]), loop)
+    # last_checkins = await RDB.get_expeditor_last_checkin(', '.join([f"'{id}'" for id in expeditor_routes]), loop)
     # print(last_checkins)
 
     if len(sorted_clients) == 0:
@@ -209,7 +209,7 @@ async def choose_language(call: types.CallbackQuery):
                                disable_notification=True, parse_mode='html')
         return
     callback_data = call.data.split('*')[-1]
-    orders = await RemoteDbManager.get_client_info(callback_data, loop)
+    orders = await RDB.get_client_info(callback_data, loop)
     item_description = msg.client_header.format(f"{re.sub(' +', ' ', str(orders[0][1]).strip())} ")
     for order in orders:
         order_text = f'''
@@ -228,7 +228,7 @@ async def choose_language(call: types.CallbackQuery):
                 order_text += msg.client_refused_text.format(
                     order[7].strftime("%d-%m-%Y %H:%M"))
         else:
-            last_checkin = await RemoteDbManager.get_expeditor_last_checkin(order[2], order[6], loop)
+            last_checkin = await RDB.get_expeditor_last_checkin(order[2], order[6], loop)
             order_text += msg.client_on_way_text.format(order[9],
                                                         f"точка {last_checkin[0][2]}" if last_checkin != [] else '-----')
         item_description += order_text + "\n--------\n"
@@ -248,7 +248,7 @@ async def choose_language(call: types.CallbackQuery):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
-    clients = await RemoteDbManager.get_client_names(AGENT, loop)
+    clients = await RDB.get_client_names(user.id_in_db, loop)
     if len(clients) > 1:
         sorted_clients = []
         for client in clients:
@@ -267,7 +267,7 @@ async def choose_language(call: types.CallbackQuery):
                                     parse_mode='html')
     else:
         await bot.edit_message_text(msg.no_clients_today, tel_id, call.message.message_id,
-                                    reply_markup=mk.search_keyboard(), parse_mode='html')
+                                     parse_mode='html')
 
 
 ''' Поиск экспедиторов'''
@@ -282,7 +282,7 @@ async def c_list_def(message):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
-    clients = await RemoteDbManager.get_all_expeditors(AGENT, loop)
+    clients = await RDB.get_all_expeditors(user.id_in_db, loop)
     if len(clients) > 1:
         sorted_clients = []
         for client in clients:
@@ -309,7 +309,7 @@ async def c_list_def(message):
 async def show_zn_inl(inline_query):
     tel_id = inline_query.from_user.id
     user = await UsersDbManager.get_user(tel_id, loop)
-    clients = await RemoteDbManager.get_all_expeditors(AGENT, loop)
+    clients = await RDB.get_all_expeditors(user.id_in_db, loop)
 
     if len(clients) == 0:
         result_id = str(uuid.uuid4())
@@ -375,7 +375,7 @@ async def choose_language(call: types.CallbackQuery):
                                disable_notification=True, parse_mode='html')
         return
     expeditor_id = call.data.split('*')[-1]
-    clients = await RemoteDbManager.get_expeditor_clients_by_agent(AGENT, expeditor_id, loop)
+    clients = await RDB.get_expeditor_clients_by_agent(user.id_in_db, expeditor_id, loop)
     text = msg.expeditor_header.format(
         f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", )
     routes = []
@@ -383,7 +383,7 @@ async def choose_language(call: types.CallbackQuery):
         if client[3] not in routes:
             if routes != []:
                 text += '\n ---------- \n '
-            last_checkin = await RemoteDbManager.get_expeditor_last_checkin(expeditor_id, client[3], loop)
+            last_checkin = await RDB.get_expeditor_last_checkin(expeditor_id, client[3], loop)
             text += f'\n {msg.route_header_html.format(client[3])} \n '
             text += f'''\n {msg.last_checkin.format(f"точка {last_checkin[0][2]}"
                                                     if last_checkin != [] else '-----')} \n '''
@@ -414,7 +414,7 @@ async def choose_language(call: types.CallbackQuery):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
-    clients = await RemoteDbManager.get_all_expeditors(AGENT, loop)
+    clients = await RDB.get_all_expeditors(user.id_in_db, loop)
     if len(clients) > 1:
         sorted_clients = []
         for client in clients:
@@ -433,7 +433,7 @@ async def choose_language(call: types.CallbackQuery):
                                     parse_mode='html')
     else:
         await bot.edit_message_text(msg.no_clients_today, tel_id, call.message.message_id,
-                                    reply_markup=mk.search_keyboard(), parse_mode='html')
+                                     parse_mode='html')
 
 
 '''Статусы доставки'''
@@ -448,7 +448,7 @@ async def reff_link(message):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
-    clients = await RemoteDbManager.get_clients(AGENT, loop)
+    clients = await RDB.get_clients(user.id_in_db, loop)
 
     if len(clients) > 0:
         text = ''
@@ -559,7 +559,7 @@ async def seller_registration_wait_patronymic(message):
     tel_id = message.chat.id
     phone_number = await UsersDbManager.get_context(tel_id, loop)
     phone_number = phone_number.split('-')[-1]
-    agent_descr = await RemoteDbManager.get_agent_description(message.text, loop)
+    agent_descr = await RDB.get_agent_description(message.text, loop)
     if len(agent_descr) > 0:
         await UsersDbManager.create_user(phone_number, message.text, loop)
         await UsersDbManager.update_descr_by_phone(phone_number, re.sub(' +', ' ', str(agent_descr[0][1]).strip()),

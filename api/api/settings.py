@@ -79,11 +79,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': 'Orders',
-        'USER': 'SA',
-        'PASSWORD': 'Andrei12345',
-        'HOST': '192.168.0.106',
+        'USER': 'goncharov',
+        'PASSWORD': 'And991302490R',
+        'HOST': '192.168.3.17',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
+            'login_timeout': 40,
+            'timeout': 40,
         },
     }
 }

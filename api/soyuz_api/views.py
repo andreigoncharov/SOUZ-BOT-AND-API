@@ -64,3 +64,13 @@ class UploadCheckouts(PublicApiMixin, ApiErrorsMixin, APIView):
         except Exception as e:
             print(f"An error occurred: {e}")
             return Response({"error": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class TestView(PublicApiMixin, ApiErrorsMixin, APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            return JsonResponse({"status": "OK"}, json_dumps_params={'ensure_ascii': False},
+                                status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return Response({"error": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

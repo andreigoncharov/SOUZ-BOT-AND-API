@@ -6,4 +6,6 @@ urlpatterns = [
          name="download-checkouts"),
     path("checkouts/upload/", UploadCheckouts.as_view(),
          name="upload-checkouts"),
+    path("test/", TestView.as_view(),
+             name="test"),
 ]
