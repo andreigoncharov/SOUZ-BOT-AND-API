@@ -55,6 +55,15 @@ class RemoteDbManager:
             conn = pyodbc.connect(self.mssqlserver_conn_str)
             return conn
 
+    async def get_expeditors(self, loop):
+        conn = self.get_conn(loop)
+        cursor = conn.cursor()
+        cursor.execute(
+            f"""SELECT DISTINCT [ExpeditorId], [Expeditor] FROM [Orders].[dbo].[{VIEW_NAME}];""")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+
     async def get_all_expeditors(self, agent_id, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()

@@ -283,7 +283,7 @@ async def c_list_def(message):
                                disable_notification=True, parse_mode='html')
         return
     clients = await RDB.get_all_expeditors(user.id_in_db, loop)
-    if len(clients) > 1:
+    if len(clients) > 0:
         sorted_clients = []
         for client in clients:
             if not any(sublist[0] == client[0] for sublist in sorted_clients):
@@ -697,6 +697,31 @@ def normalize_phone_number(phone_number):
 
     return phone_number
 
+
+@dp.message_handler(lambda message: message.text == '🚛 Все экспедиторы')
+async def reff_link(message):
+    tel_id = message.chat.id
+    clients = await RDB.get_expeditors(loop)
+    if len(clients) > 0:
+        sorted_clients = []
+        for client in clients:
+            if not any(sublist[0] == client[0] for sublist in sorted_clients):
+                sorted_clients.append([client[0], client[1], [client]])
+            else:
+                for c in sorted_clients:
+                    if c[0] == client[0]:
+                        c[2].append(client)
+                        break
+        keyb = InlineKeyboardMarkup()
+        for client in sorted_clients:
+            keyb.add(
+                InlineKeyboardButton(client[1], callback_data=f"emi*{re.sub(' +', ' ', str(client[0]).strip())}"))
+        await bot.send_message(tel_id, msg.clients_list, reply_markup=keyb, parse_mode='html',
+                               disable_notification=True)
+    else:
+        await bot.send_message(tel_id, msg.no_clients_today,
+                               reply_markup=mk.main_menu(message.from_user.username in ADMINS), parse_mode='html',
+                               disable_notification=True)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)

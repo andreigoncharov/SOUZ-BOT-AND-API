@@ -12,7 +12,7 @@ def main_menu(isAdmin):
                                            resize_keyboard=True)
 
 
-admin_menu = reply_keyboard.ReplyKeyboardMarkup([['✅ Добавить агента'], ['⛔️ Исключить агента'],
+admin_menu = reply_keyboard.ReplyKeyboardMarkup([['✅ Добавить агента'], ['⛔️ Исключить агента'], ['🚛 Все экспедиторы']
                                                   ['⬅️ Главное меню']],
                                                 resize_keyboard=True)
 
