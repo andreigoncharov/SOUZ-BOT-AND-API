@@ -137,6 +137,17 @@ ORDER BY [Route], [Order];""")
         conn.close()
         return rows
 
+    async def get_expeditor_clients(self, expeditor_id, loop):
+        conn = self.get_conn(loop)
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT [Expeditor], [CustomerId], [Customer], [Route], [Order], [TimeStamp], [CheckStatus]
+FROM [Orders].[dbo].[{VIEW_NAME}]
+WHERE LTRIM(RTRIM([ExpeditorId]))='{expeditor_id}'
+ORDER BY [Route], [Order];""")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+
     async def get_agent_description(self, agent_id, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()

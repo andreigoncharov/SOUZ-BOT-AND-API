@@ -715,12 +715,78 @@ async def reff_link(message):
         keyb = InlineKeyboardMarkup()
         for client in sorted_clients:
             keyb.add(
-                InlineKeyboardButton(client[1], callback_data=f"emi*{re.sub(' +', ' ', str(client[0]).strip())}"))
+                InlineKeyboardButton(client[1], callback_data=f"plusemi*{re.sub(' +', ' ', str(client[0]).strip())}"))
         await bot.send_message(tel_id, msg.clients_list, reply_markup=keyb, parse_mode='html',
                                disable_notification=True)
     else:
         await bot.send_message(tel_id, msg.no_clients_today,
                                reply_markup=mk.main_menu(message.from_user.username in ADMINS), parse_mode='html',
+                               disable_notification=True)
+
+
+@dp.callback_query_handler(lambda call: call.data.startswith('plusemi*'))
+async def choose_language(call: types.CallbackQuery):
+    tel_id = call.from_user.id
+    user = await UsersDbManager.get_user(tel_id, loop)
+    if user.is_blocked:
+        text = msg.user_not_exists
+        await bot.send_message(tel_id, text,
+                               disable_notification=True, parse_mode='html')
+        return
+    expeditor_id = call.data.split('*')[-1]
+    clients = await RDB.get_expeditor_clients(expeditor_id, loop)
+    text = msg.expeditor_header.format(
+        f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", )
+    routes = []
+    for client in clients:
+        if client[3] not in routes:
+            if routes != []:
+                text += '\n ---------- \n '
+            last_checkin = await RDB.get_expeditor_last_checkin(expeditor_id, client[3], loop)
+            text += f'\n {msg.route_header_html.format(client[3])} \n '
+            text += f'''\n {msg.last_checkin.format(f"точка {last_checkin[0][2]}"
+                                                    if last_checkin != [] else '-----')} \n '''
+            routes.append(client[3])
+        client_name = re.sub(' +', ' ', str(client[2]).strip())
+        client_id = re.sub(' +', ' ', str(client[3]).strip())
+        if client[5] is not None:
+            if client[6] == 'S' or client[6] is None:
+                text += '\n' + msg.expeditor_client_shipped_text.format(client_name, client[4]) + '\n '
+            elif client[6] == 'SA':
+                text += '\n' + msg.expeditor_client_shipped_with_adjustment_text.format(client_name, client[4]) + '\n '
+            else:
+                text += '\n' + msg.expeditor_client_refused_text.format(client_name, client[4]) + '\n '
+        else:
+            text += '\n' + msg.expeditor_client_on_way_text.format(client_name, client[4]) + '\n '
+    keyb = InlineKeyboardMarkup()
+    keyb.add(
+        InlineKeyboardButton("⬅️ Список экспедиторов", callback_data=f"plusexpeditors_back"))
+    await bot.edit_message_text(text, tel_id, call.message.message_id, parse_mode='html', reply_markup=keyb)
+
+
+@dp.callback_query_handler(lambda call: call.data.startswith('plusexpeditors_back'))
+async def choose_language(call: types.CallbackQuery):
+    tel_id = call.from_user.id
+    clients = await RDB.get_expeditors(loop)
+    if len(clients) > 0:
+        sorted_clients = []
+        for client in clients:
+            if not any(sublist[0] == client[0] for sublist in sorted_clients):
+                sorted_clients.append([client[0], client[1], [client]])
+            else:
+                for c in sorted_clients:
+                    if c[0] == client[0]:
+                        c[2].append(client)
+                        break
+        keyb = InlineKeyboardMarkup()
+        for client in sorted_clients:
+            keyb.add(
+                InlineKeyboardButton(client[1], callback_data=f"plusemi*{re.sub(' +', ' ', str(client[0]).strip())}"))
+        await bot.send_message(tel_id, msg.clients_list, reply_markup=keyb, parse_mode='html',
+                               disable_notification=True)
+    else:
+        await bot.send_message(tel_id, msg.no_clients_today,
+                               reply_markup=mk.main_menu(call.message.from_user.username in ADMINS), parse_mode='html',
                                disable_notification=True)
 
 if __name__ == '__main__':
