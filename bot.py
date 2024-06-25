@@ -724,6 +724,17 @@ async def reff_link(message):
                                disable_notification=True)
 
 
+def split_message(text):
+    messages = []
+    while len(text) > 4096:
+        split_pos = text.rfind('\n', 0, 4096)
+        if split_pos == -1:
+            split_pos = 4096
+        messages.append(text[:split_pos])
+        text = text[split_pos:]
+    messages.append(text)
+    return messages
+
 @dp.callback_query_handler(lambda call: call.data.startswith('plusemi*'))
 async def choose_language(call: types.CallbackQuery):
     tel_id = call.from_user.id
@@ -761,7 +772,15 @@ async def choose_language(call: types.CallbackQuery):
     keyb = InlineKeyboardMarkup()
     keyb.add(
         InlineKeyboardButton("⬅️ Список экспедиторов", callback_data=f"plusexpeditors_back"))
-    await bot.edit_message_text(text, tel_id, call.message.message_id, parse_mode='html', reply_markup=keyb)
+    res_text = split_message(text)
+    if len(res_text) == 1:
+        await bot.edit_message_text(res_text[0], tel_id, call.message.message_id, parse_mode='html', reply_markup=keyb)
+    else:
+        for t in res_text:
+            if t != res_text[len(res_text)-1]:
+                await bot.send_message(tel_id, t, parse_mode='html')
+            else:
+                await bot.send_message(tel_id, t, parse_mode='html', reply_markup=keyb)
 
 
 @dp.callback_query_handler(lambda call: call.data.startswith('plusexpeditors_back'))
