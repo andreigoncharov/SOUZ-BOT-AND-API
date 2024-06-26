@@ -118,8 +118,8 @@ class RemoteDbManager:
     [Route],
     MAX([Order]) AS MaxOrder
 FROM [Orders].[dbo].[{VIEW_NAME}]
-WHERE [ExpeditorId] = '{expeditor_id}' 
-  AND [TimeStamp] IS NOT NULL
+WHERE LTRIM(RTRIM([ExpeditorId])) = '{expeditor_id}' 
+  AND [TimeStamp] IS NOT NULL AND ROUTE={route}
 GROUP BY [ExpeditorId], [Route];
 """)
         rows = cursor.fetchall()
