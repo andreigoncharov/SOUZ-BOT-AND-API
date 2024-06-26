@@ -776,6 +776,7 @@ async def choose_language(call: types.CallbackQuery):
             # last_checkin = await RDB.get_expeditor_last_checkin(expeditor_id, client[3], loop)
             last_checkin = find_last_checkin(clients, client[3])
             text += f'\n {msg.route_header_html.format(client[3])} \n '
+            print(last_checkin)
             text += f'''\n {msg.last_checkin.format(f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5]}"
                                                     if last_checkin != -1 else '-----')} \n '''
             if is_all_points(clients, client[3]):
