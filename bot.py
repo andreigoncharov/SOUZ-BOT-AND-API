@@ -828,8 +828,7 @@ def is_all_points(clients, route):
         if client[3] == route and client[5] is not None:
             on_way_points_count += 1
             max_point = client[4]
-    print(on_way_points_count >= max_point, on_way_points_count, max_point)
-    return on_way_points_count >= max_point
+    return (on_way_points_count >= max_point) and on_way_points_count != 0 and max_point != 0
 
 
 @dp.callback_query_handler(lambda call: call.data.startswith('plusexpeditors_back'))
