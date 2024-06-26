@@ -210,10 +210,9 @@ async def choose_language(call: types.CallbackQuery):
         return
     callback_data = call.data.split('*')[-1]
     orders = await RDB.get_client_info(callback_data, loop)
-    print(orders)
     item_description = msg.client_header.format(f"{re.sub(' +', ' ', str(orders[0][1]).strip())} ")
+    exped = []
     for order in orders:
-        print(order)
         order_text = f'''
 {msg.expeditor_header.format(
             f"{re.sub(' +', ' ', str(order[3]).strip())}", )}
@@ -231,8 +230,21 @@ async def choose_language(call: types.CallbackQuery):
                     order[7].strftime("%d-%m-%Y %H:%M"))
         else:
             # last_checkin = await RDB.get_expeditor_last_checkin(order[2], order[6], loop)
-            xl = await RDB.get_expeditor_clients(order[2], loop)
-            last_checkin = find_last_checkin(xl, order[2])
+            if exped == []:
+                xl = await RDB.get_expeditor_clients(order[2], loop)
+                last_checkin = find_last_checkin(xl, order[2])
+                exped.append([order[2], xl])
+            else:
+                is_in = False
+                for exp in exped:
+                    if exp[0] == order[2]:
+                        last_checkin = find_last_checkin(exp[1], order[2])
+                        is_in = True
+                        break
+                if not is_in:
+                    xl = await RDB.get_expeditor_clients(order[2], loop)
+                    last_checkin = find_last_checkin(xl, order[2])
+                    exped.append([order[2], xl])
             order_text += msg.client_on_way_text.format(order[9],
                                                         f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5] if last_checkin[1] != 'None' else '-----'}"
                                                     if last_checkin != -1 else '-----')
