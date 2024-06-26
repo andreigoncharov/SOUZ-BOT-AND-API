@@ -83,9 +83,9 @@ client_refused_text = '''
 
 '''
 
-expeditor_client_shipped_text = '''🟢 {0} (точка {1}) - отгружен'''
-expeditor_client_shipped_with_adjustment_text = '''🟠 {0} (точка {1}) - отгружен с корректировкой'''
-expeditor_client_refused_text = '''🔴 {0} (точка {1}) - отказ'''
+expeditor_client_shipped_text = '''🟢 {0} (точка {1}) - отгружен в {2}'''
+expeditor_client_shipped_with_adjustment_text = '''🟠 {0} (точка {1}) - отгружен с корректировкой в {2}'''
+expeditor_client_refused_text = '''🔴 {0} (точка {1}) - отказ в {2}'''
 expeditor_client_on_way_text = '''🟡 {0} (точка {1}) - в пути'''
 
 
