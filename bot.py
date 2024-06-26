@@ -250,7 +250,6 @@ async def choose_language(call: types.CallbackQuery):
                                                     if last_checkin != -1 else '-----')
         item_description += order_text + "\n--------\n"
     # await bot.send_message(tel_id, item_description, parse_mode='html', disable_notification=True)
-    print(item_description)
     keyb = InlineKeyboardMarkup()
     keyb.add(
         InlineKeyboardButton("⬅️ Список клиентов", callback_data=f"clients_back"))
