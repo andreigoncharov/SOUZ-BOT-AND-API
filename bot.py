@@ -755,12 +755,12 @@ async def choose_language(call: types.CallbackQuery):
         if client[3] not in routes:
             if routes != []:
                 text += '\n ---------- \n '
-            last_checkin = await RDB.get_expeditor_last_checkin(expeditor_id, client[3], loop)
+            # last_checkin = await RDB.get_expeditor_last_checkin(expeditor_id, client[3], loop)
+            last_checkin = find_last_checkin(clients, client[3])
             text += f'\n {msg.route_header_html.format(client[3])} \n '
-            text += f'''\n {msg.last_checkin.format(f"точка {last_checkin[0][2]}"
-                                                    if last_checkin != [] else '-----')} \n '''
+            text += f'''\n {msg.last_checkin.format(f"точка {last_checkin}"
+                                                    if last_checkin != -1 else '-----')} \n '''
             routes.append(client[3])
-            print(last_checkin)
         client_name = re.sub(' +', ' ', str(client[2]).strip())
         # client_id = re.sub(' +', ' ', str(client[3]).strip())
         if client[4] not in points:
@@ -787,6 +787,14 @@ async def choose_language(call: types.CallbackQuery):
             else:
                 await bot.send_message(tel_id, t, parse_mode='html', reply_markup=keyb)
 
+
+def find_last_checkin(clients, route):
+    lc = -1
+    for client in clients:
+        if client[3] == route:
+            if int(client[4]) > lc and client[5] is not None:
+                lc = client[4]
+    return lc
 
 @dp.callback_query_handler(lambda call: call.data.startswith('plusexpeditors_back'))
 async def choose_language(call: types.CallbackQuery):
