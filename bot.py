@@ -767,11 +767,11 @@ async def choose_language(call: types.CallbackQuery):
             points.append(client[4])
             if client[5] is not None:
                 if client[6] == 'S' or client[6] is None:
-                    text += '\n' + msg.expeditor_client_shipped_text.format(client_name, client[4], client[5].split()[1][:5]) + '\n '
+                    text += '\n' + msg.expeditor_client_shipped_text.format(client_name, client[4], str(client[5]).split()[1][:5]) + '\n '
                 elif client[6] == 'SA':
-                    text += '\n' + msg.expeditor_client_shipped_with_adjustment_text.format(client_name, client[4], client[5].split()[1][:5]) + '\n '
+                    text += '\n' + msg.expeditor_client_shipped_with_adjustment_text.format(client_name, client[4], str(client[5]).split()[1][:5]) + '\n '
                 else:
-                    text += '\n' + msg.expeditor_client_refused_text.format(client_name, client[4], client[5].split()[1][:5]) + '\n '
+                    text += '\n' + msg.expeditor_client_refused_text.format(client_name, client[4], str(client[5]).split()[1][:5]) + '\n '
             else:
                 text += '\n' + msg.expeditor_client_on_way_text.format(client_name, client[4]) + '\n '
     keyb = InlineKeyboardMarkup()
