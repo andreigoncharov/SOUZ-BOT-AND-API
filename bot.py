@@ -210,6 +210,7 @@ async def choose_language(call: types.CallbackQuery):
         return
     callback_data = call.data.split('*')[-1]
     orders = await RDB.get_client_info(callback_data, loop)
+    print(orders)
     item_description = msg.client_header.format(f"{re.sub(' +', ' ', str(orders[0][1]).strip())} ")
     for order in orders:
         order_text = f'''
