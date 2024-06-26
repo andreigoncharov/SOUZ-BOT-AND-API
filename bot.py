@@ -213,6 +213,7 @@ async def choose_language(call: types.CallbackQuery):
     print(orders)
     item_description = msg.client_header.format(f"{re.sub(' +', ' ', str(orders[0][1]).strip())} ")
     for order in orders:
+        print(order)
         order_text = f'''
 {msg.expeditor_header.format(
             f"{re.sub(' +', ' ', str(order[3]).strip())}", )}
@@ -234,6 +235,7 @@ async def choose_language(call: types.CallbackQuery):
                                                         f"точка {last_checkin[0][2]}" if last_checkin != [] else '-----')
         item_description += order_text + "\n--------\n"
     # await bot.send_message(tel_id, item_description, parse_mode='html', disable_notification=True)
+    print(item_description)
     keyb = InlineKeyboardMarkup()
     keyb.add(
         InlineKeyboardButton("⬅️ Список клиентов", callback_data=f"clients_back"))
