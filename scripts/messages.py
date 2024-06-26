@@ -94,6 +94,7 @@ clients_shipped_with_adjustment_text = '''🟠 {0} - отгружен с кор�
 clients_refused_text = '''🔴 {0} - отказ'''
 clients_on_way_text = '''🟡 {0} - в пути'''
 
+all_points_complete = '''✅ Маршрут завершен ✅'''
 
 ''' АДМИН '''
 

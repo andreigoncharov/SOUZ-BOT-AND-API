@@ -379,30 +379,48 @@ async def choose_language(call: types.CallbackQuery):
     text = msg.expeditor_header.format(
         f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", )
     routes = []
+    points = []
     for client in clients:
         if client[3] not in routes:
             if routes != []:
                 text += '\n ---------- \n '
-            last_checkin = await RDB.get_expeditor_last_checkin(expeditor_id, client[3], loop)
+            # last_checkin = await RDB.get_expeditor_last_checkin(expeditor_id, client[3], loop)
+            last_checkin = find_last_checkin(clients, client[3])
             text += f'\n {msg.route_header_html.format(client[3])} \n '
-            text += f'''\n {msg.last_checkin.format(f"точка {last_checkin[0][2]}"
-                                                    if last_checkin != [] else '-----')} \n '''
+            text += f'''\n {msg.last_checkin.format(f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5]}"
+                                                    if last_checkin != -1 else '-----')} \n '''
+            if is_all_points(clients, client[3]):
+                text += f'\n {msg.all_points_complete} \n '
             routes.append(client[3])
         client_name = re.sub(' +', ' ', str(client[2]).strip())
-        client_id = re.sub(' +', ' ', str(client[3]).strip())
-        if client[5] is not None:
-            if client[6] == 'S' or client[6] is None:
-                text += '\n' + msg.expeditor_client_shipped_text.format(client_name, client[4]) + '\n '
-            elif client[6] == 'SA':
-                text += '\n' + msg.expeditor_client_shipped_with_adjustment_text.format(client_name, client[4]) + '\n '
+        # client_id = re.sub(' +', ' ', str(client[3]).strip())
+        if client[4] not in points:
+            points.append(client[4])
+            if client[5] is not None:
+                if client[6] == 'S' or client[6] is None:
+                    text += '\n' + msg.expeditor_client_shipped_text.format(client_name, client[4],
+                                                                            str(client[5]).split()[1][:5]) + '\n '
+                elif client[6] == 'SA':
+                    text += '\n' + msg.expeditor_client_shipped_with_adjustment_text.format(client_name, client[4],
+                                                                                            str(client[5]).split()[1][
+                                                                                            :5]) + '\n '
+                else:
+                    text += '\n' + msg.expeditor_client_refused_text.format(client_name, client[4],
+                                                                            str(client[5]).split()[1][:5]) + '\n '
             else:
-                text += '\n' + msg.expeditor_client_refused_text.format(client_name, client[4]) + '\n '
-        else:
-            text += '\n' + msg.expeditor_client_on_way_text.format(client_name, client[4]) + '\n '
+                text += '\n' + msg.expeditor_client_on_way_text.format(client_name, client[4]) + '\n '
     keyb = InlineKeyboardMarkup()
     keyb.add(
         InlineKeyboardButton("⬅️ Список экспедиторов", callback_data=f"expeditors_back"))
-    await bot.edit_message_text(text, tel_id, call.message.message_id, parse_mode='html', reply_markup=keyb)
+    res_text = split_message(text)
+    if len(res_text) == 1:
+        await bot.edit_message_text(res_text[0], tel_id, call.message.message_id, parse_mode='html', reply_markup=keyb)
+    else:
+        for t in res_text:
+            if t != res_text[len(res_text) - 1]:
+                await bot.send_message(tel_id, t, parse_mode='html')
+            else:
+                await bot.send_message(tel_id, t, parse_mode='html', reply_markup=keyb)
 
 
 @dp.callback_query_handler(lambda call: call.data.startswith('expeditors_back'))
@@ -758,8 +776,10 @@ async def choose_language(call: types.CallbackQuery):
             # last_checkin = await RDB.get_expeditor_last_checkin(expeditor_id, client[3], loop)
             last_checkin = find_last_checkin(clients, client[3])
             text += f'\n {msg.route_header_html.format(client[3])} \n '
-            text += f'''\n {msg.last_checkin.format(f"точка {last_checkin}"
+            text += f'''\n {msg.last_checkin.format(f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5]}"
                                                     if last_checkin != -1 else '-----')} \n '''
+            if is_all_points(clients, client[3]):
+                text += f'\n {msg.all_points_complete} \n '
             routes.append(client[3])
         client_name = re.sub(' +', ' ', str(client[2]).strip())
         # client_id = re.sub(' +', ' ', str(client[3]).strip())
@@ -793,8 +813,19 @@ def find_last_checkin(clients, route):
     for client in clients:
         if client[3] == route:
             if int(client[4]) > lc and client[5] is not None:
-                lc = client[4]
+                lc = [client[4], client[5]]
     return lc
+
+
+def is_all_points(clients, route):
+    max_point = 0
+    on_way_points_count = 0
+    for client in clients:
+        if client[3] == route and client[5] is not None:
+            on_way_points_count += 1
+            max_point = client[4]
+    return on_way_points_count >= max_point
+
 
 @dp.callback_query_handler(lambda call: call.data.startswith('plusexpeditors_back'))
 async def choose_language(call: types.CallbackQuery):
