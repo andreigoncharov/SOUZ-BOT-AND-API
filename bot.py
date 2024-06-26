@@ -230,9 +230,12 @@ async def choose_language(call: types.CallbackQuery):
                 order_text += msg.client_refused_text.format(
                     order[7].strftime("%d-%m-%Y %H:%M"))
         else:
-            last_checkin = await RDB.get_expeditor_last_checkin(order[2], order[6], loop)
+            # last_checkin = await RDB.get_expeditor_last_checkin(order[2], order[6], loop)
+            xl = await RDB.get_expeditor_clients(order[2], loop)
+            last_checkin = find_last_checkin(xl, order[2])
             order_text += msg.client_on_way_text.format(order[9],
-                                                        f"точка {last_checkin[0][2]}" if last_checkin != [] else '-----')
+                                                        f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5] if last_checkin[1] != 'None' else '-----'}"
+                                                    if last_checkin != -1 else '-----')
         item_description += order_text + "\n--------\n"
     # await bot.send_message(tel_id, item_description, parse_mode='html', disable_notification=True)
     print(item_description)
