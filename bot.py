@@ -825,10 +825,10 @@ def is_all_points(clients, route):
     max_point = 0
     on_way_points_count = 0
     for client in clients:
-        print(client[3], client[5])
         if client[3] == route and client[5] is not None:
             on_way_points_count += 1
             max_point = client[4]
+    print(on_way_points_count >= max_point, on_way_points_count, max_point)
     return on_way_points_count >= max_point
 
 
