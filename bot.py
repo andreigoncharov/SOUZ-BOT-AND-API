@@ -812,7 +812,7 @@ def find_last_checkin(clients, route):
     lc = -1
     for client in clients:
         if client[3] == route:
-            if lc != []:
+            if lc != [] and client[5] is not None:
                 lc = [client[4], str(client[5])]
             if int(client[4]) > lc[0] and client[5] is not None:
                 lc = [client[4], str(client[5])]
