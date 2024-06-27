@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 from pymysql import connect
 import aiomysql
@@ -56,12 +57,18 @@ class RemoteDbManager:
             return conn
 
     async def get_expeditors(self, loop):
+        print("get_conn")
+        t1 = time.time()
         conn = self.get_conn(loop)
+        print("get_conn time: ", time.time() - t1)
+        print("continue")
+        t1 = time.time()
         cursor = conn.cursor()
         cursor.execute(
             f"""SELECT DISTINCT [ExpeditorId], [Expeditor] FROM [Orders].[dbo].[{VIEW_NAME}];""")
         rows = cursor.fetchall()
         conn.close()
+        print("finish time: ", time.time() - t1)
         return rows
 
     async def get_all_expeditors(self, agent_id, loop):
