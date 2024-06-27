@@ -552,6 +552,7 @@ async def reff_link(message):
 async def reff_link(message):
     tel_id = message.chat.id
     text = 'Операция отменена!'
+    await UsersDbManager.update_context(tel_id, 0, loop)
     await bot.send_message(tel_id, text, reply_markup=mk.admin_menu,
                            disable_notification=True, parse_mode='html')
 
