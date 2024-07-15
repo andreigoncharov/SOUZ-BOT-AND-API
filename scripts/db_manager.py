@@ -148,7 +148,7 @@ ORDER BY [Route], [Order];""")
     async def get_expeditor_clients(self, expeditor_id, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT [Expeditor], [CustomerId], [Customer], [Route], [Order], [TimeStamp], [CheckStatus], 
+        cursor.execute(f"""SELECT [Expedito], [CustomerId], [Customer], [Route], [Order], [TimeStamp], [CheckStatus], 
         [PhoneNumber]
 FROM [Orders].[dbo].[{VIEW_NAME}]
 WHERE LTRIM(RTRIM([ExpeditorId]))='{expeditor_id}'
