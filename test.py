@@ -1,27 +1,24 @@
-import asyncio
-import pyodbc
+import re
 
-async def execute_query():
-    loop = asyncio.get_running_loop()
+text = '093-660-28-69      '
 
-    # Создаем подключение к базе данных
-    conn = await loop.run_in_executor(None, lambda: pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=localhost;DATABASE=Expeditors;UID=SA;PWD=Andrei12345'))
 
-    # Создаем курсор для выполнения запросов
-    cursor = conn.cursor()
+def normalize_phone_number(phone_number):
+    phone_numbers = phone_number.split()
+    normalized_numbers = []
+    for number in phone_numbers:
+        cleaned_numbers = re.findall(r'\d+', number)
+        cleaned_number = ''.join(cleaned_numbers)
+        if cleaned_number.startswith('0'):
+            cleaned_number = '+380' + cleaned_number[1:]
+        elif cleaned_number.startswith('380'):
+            cleaned_number = '+380' + cleaned_number[3:]
+        elif cleaned_number.startswith('+380'):
+            pass
+        else:
+            return ""
+        normalized_numbers.append(cleaned_number)
+    return ' '.join(normalized_numbers)
 
-    # Выполняем SQL-запрос
-    cursor.execute("SELECT * FROM Expeditors")
 
-    # Получаем результаты запроса
-    rows = cursor.fetchall()
-
-    # Выводим результаты на экран
-    for row in rows:
-        print(row)
-
-    # Закрываем соединение
-    conn.close()
-
-# Запускаем асинхронную функцию execute_query()
-asyncio.run(execute_query())
+print(normalize_phone_number(text))

@@ -57,18 +57,18 @@ class RemoteDbManager:
             return conn
 
     async def get_expeditors(self, loop):
-        print("get_conn")
+        # print("get_conn")
         t1 = time.time()
         conn = self.get_conn(loop)
-        print("get_conn time: ", time.time() - t1)
-        print("continue")
+        # print("get_conn time: ", time.time() - t1)
+        # print("continue")
         t1 = time.time()
         cursor = conn.cursor()
         cursor.execute(
             f"""SELECT DISTINCT [ExpeditorId], [Expeditor] FROM [Orders].[dbo].[{VIEW_NAME}];""")
         rows = cursor.fetchall()
         conn.close()
-        print("finish time: ", time.time() - t1)
+        # print("finish time: ", time.time() - t1)
         return rows
 
     async def get_all_expeditors(self, agent_id, loop):
@@ -136,7 +136,8 @@ GROUP BY [ExpeditorId], [Route];
     async def get_expeditor_clients_by_agent(self, agent_id, expeditor_id, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT [Expeditor], [CustomerId], [Customer], [Route], [Order], [TimeStamp], [CheckStatus]
+        cursor.execute(f"""SELECT [Expeditor], [CustomerId], [Customer], [Route], [Order], [TimeStamp], [CheckStatus], 
+        [PhoneNumber]
 FROM [Orders].[dbo].[{VIEW_NAME}]
 WHERE LTRIM(RTRIM([AgentID])) = '{agent_id}' AND LTRIM(RTRIM([ExpeditorId]))='{expeditor_id}'
 ORDER BY [Route], [Order];""")
@@ -147,7 +148,8 @@ ORDER BY [Route], [Order];""")
     async def get_expeditor_clients(self, expeditor_id, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT [Expeditor], [CustomerId], [Customer], [Route], [Order], [TimeStamp], [CheckStatus]
+        cursor.execute(f"""SELECT [Expeditor], [CustomerId], [Customer], [Route], [Order], [TimeStamp], [CheckStatus], 
+        [PhoneNumber]
 FROM [Orders].[dbo].[{VIEW_NAME}]
 WHERE LTRIM(RTRIM([ExpeditorId]))='{expeditor_id}'
 ORDER BY [Route], [Order];""")

@@ -393,8 +393,8 @@ async def choose_language(call: types.CallbackQuery):
         return
     expeditor_id = call.data.split('*')[-1]
     clients = await RDB.get_expeditor_clients_by_agent(user.id_in_db, expeditor_id, loop)
-    text = msg.expeditor_header.format(
-        f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", )
+    text = msg.expeditor_header_with_phone.format(
+        f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
     routes = []
     points = []
     for client in clients:
@@ -733,6 +733,23 @@ def normalize_phone_number(phone_number):
 
     return phone_number
 
+def normalize_phone_number_plus(phone_number):
+    phone_numbers = phone_number.split()
+    normalized_numbers = []
+    for number in phone_numbers:
+        cleaned_numbers = re.findall(r'\d+', number)
+        cleaned_number = ''.join(cleaned_numbers)
+        if cleaned_number.startswith('0'):
+            cleaned_number = '+380' + cleaned_number[1:]
+        elif cleaned_number.startswith('380'):
+            cleaned_number = '+380' + cleaned_number[3:]
+        elif cleaned_number.startswith('+380'):
+            pass
+        else:
+            return ""
+        normalized_numbers.append(cleaned_number)
+    return ' '.join(normalized_numbers)
+
 
 @dp.message_handler(lambda message: message.text == '🚛 Все экспедиторы')
 async def reff_link(message):
@@ -783,8 +800,8 @@ async def choose_language(call: types.CallbackQuery):
         return
     expeditor_id = call.data.split('*')[-1]
     clients = await RDB.get_expeditor_clients(expeditor_id, loop)
-    text = msg.expeditor_header.format(
-        f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", )
+    text = msg.expeditor_header_with_phone.format(
+        f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
     routes = []
     points = []
     for client in clients:
