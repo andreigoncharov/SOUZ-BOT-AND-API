@@ -803,6 +803,7 @@ async def choose_language(call: types.CallbackQuery):
         return
     expeditor_id = call.data.split('*')[-1]
     clients = await RDB.get_expeditor_clients(expeditor_id, loop)
+    print(str(clients[0][7]), normalize_phone_number_plus(str(clients[0][7])))
     text = msg.expeditor_header_with_phone.format(
         f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
     routes = []
