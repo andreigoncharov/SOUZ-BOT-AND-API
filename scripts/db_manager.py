@@ -166,6 +166,16 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
         conn.close()
         return rows
 
+    async def search_agent_by_description(self, description, loop):
+        conn = self.get_conn(loop)
+        cursor = conn.cursor()
+        like_pattern = f"%{description}%"
+        cursor.execute("""SELECT [ID], [DESCR] FROM [Orders].[dbo].[agent_info]
+        WHERE LTRIM(RTRIM([DESCR])) LIKE ?;""", (like_pattern))
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+
 
 class UsersDbManager:
     @staticmethod

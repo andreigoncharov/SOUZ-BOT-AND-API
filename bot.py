@@ -1,17 +1,14 @@
-import logging
+import re
 import re
 import traceback
 import uuid
 
 from aiogram import Bot, Dispatcher, executor, types
-import asyncio
-
 from aiogram.types import InputTextMessageContent, InlineQueryResultArticle, InlineKeyboardMarkup, InlineKeyboardButton, \
-    CallbackQuery, Message
+    Message
 
 import scripts.markup as mk
 import scripts.messages as msg
-from scripts.config import TOKEN
 from scripts.db_manager import *
 
 loop = asyncio.get_event_loop()
@@ -40,7 +37,8 @@ async def start(message: Message):
                                disable_notification=True, parse_mode='html')
         return
     user = await UsersDbManager.get_user(tel_id, loop)
-    if user.is_blocked:
+    print(user.is_blocked)
+    if user.is_blocked == 1 or user.is_blocked == True:
         text = msg.user_not_exists
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
@@ -247,7 +245,7 @@ async def choose_language(call: types.CallbackQuery):
                     exped.append([order[2], xl])
             order_text += msg.client_on_way_text.format(order[9],
                                                         f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5] if last_checkin[1] != 'None' else '-----'}"
-                                                    if last_checkin != -1 else '-----')
+                                                        if last_checkin != -1 else '-----')
         item_description += order_text + "\n--------\n"
     # await bot.send_message(tel_id, item_description, parse_mode='html', disable_notification=True)
     keyb = InlineKeyboardMarkup()
@@ -284,7 +282,7 @@ async def choose_language(call: types.CallbackQuery):
                                     parse_mode='html')
     else:
         await bot.edit_message_text(msg.no_clients_today, tel_id, call.message.message_id,
-                                     parse_mode='html')
+                                    parse_mode='html')
 
 
 ''' Поиск экспедиторов'''
@@ -468,7 +466,7 @@ async def choose_language(call: types.CallbackQuery):
                                     parse_mode='html')
     else:
         await bot.edit_message_text(msg.no_clients_today, tel_id, call.message.message_id,
-                                     parse_mode='html')
+                                    parse_mode='html')
 
 
 '''Статусы доставки'''
@@ -557,6 +555,15 @@ async def reff_link(message):
                            disable_notification=True, parse_mode='html')
 
 
+@dp.callback_query_handler(lambda call: call.data.startswith('cancel_search'))
+async def choose_language(call: types.CallbackQuery):
+    tel_id = call.from_user.id
+    text = 'Операция отменена!'
+    await UsersDbManager.update_context(tel_id, 0, loop)
+    await bot.send_message(tel_id, text, reply_markup=mk.admin_menu,
+                           disable_notification=True, parse_mode='html')
+
+
 @dp.message_handler(lambda message: message.text == '✅ Добавить агента')
 async def reff_link(message):
     tel_id = message.chat.id
@@ -564,16 +571,79 @@ async def reff_link(message):
     #     await bot.send_message(tel_id, msg.no_admin_text,
     #                            disable_notification=True, parse_mode='html')
     #     return
-    text = msg.enter_phone
+    text = msg.enter_surname
     await bot.send_message(tel_id, text, reply_markup=mk.cancel,
                            disable_notification=True, parse_mode='html')
-    await UsersDbManager.update_context(tel_id, 'wait_phone_number', loop)
+    await UsersDbManager.update_context(tel_id, 'wait_agent_surname', loop)
 
 
-@dp.message_handler(lambda message: UsersDbManager.sync_get_context(message.chat.id) == 'wait_phone_number',
+@dp.message_handler(lambda message: UsersDbManager.sync_get_context(message.chat.id) == 'wait_agent_surname',
                     content_types=['text'])
 async def seller_registration_wait_patronymic(message):
     tel_id = message.chat.id
+    if len(message.text) > 2:
+        text = 'Поиск агента ...'
+        mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                      disable_notification=True, parse_mode='html')
+        res = await RDB.search_agent_by_description(message.text, loop)
+        await bot.delete_message(tel_id, mess.message_id)
+        if len(res) > 0:
+            text = 'Найденные агенты:'
+            keyb = InlineKeyboardMarkup()
+            for agent in res:
+                name = re.sub(' +', ' ', str(agent[1]).strip())
+                ag_id = re.sub(' +', ' ', str(agent[0]).strip())
+                uex = await UsersDbManager.get_user_by_agent_id(ag_id, loop)
+                if uex is not None:
+                    keyb.add(
+                        InlineKeyboardButton(f"✅ {name} ({ag_id})",
+                                             callback_data=f"agentaddalreadyexists*{ag_id}"))
+                else:
+                    keyb.add(
+                        InlineKeyboardButton(f"{name} ({ag_id})",
+                                             callback_data=f"agentadd*{ag_id}"))
+            keyb.add(
+                InlineKeyboardButton("❌ Отменить",
+                                     callback_data=f"cancel_search"))
+            await bot.send_message(tel_id, text, reply_markup=keyb,
+                                   disable_notification=True, parse_mode='html')
+        else:
+            text = f'Агент с фамилией {message.text} не найден в базе!'
+            await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                   disable_notification=True, parse_mode='html')
+    else:
+        text = 'Введите не менее двух символов!'
+        await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                               disable_notification=True, parse_mode='html')
+
+
+@dp.callback_query_handler(lambda call: call.data.startswith('agentaddalreadyexists*'))
+async def choose_language(call: types.CallbackQuery):
+    tel_id = call.from_user.id
+    agent_id = call.data.split('*')[-1]
+    user = await UsersDbManager.get_user_by_agent_id(agent_id, loop)
+    text = f'❗️Данный агент уже зарегестрирован в боте!\n \n {user.descr} ({user.id_in_db})\n {user.phone}'
+    await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                           disable_notification=True, parse_mode='html')
+
+
+@dp.callback_query_handler(lambda call: call.data.startswith('agentadd*'))
+async def choose_language(call: types.CallbackQuery):
+    tel_id = call.from_user.id
+    agent_id = call.data.split('*')[-1]
+    text = msg.enter_phone
+    await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                           disable_notification=True, parse_mode='html')
+    await UsersDbManager.update_context(tel_id, f'wait_phone_number-{agent_id}', loop)
+
+
+@dp.message_handler(lambda message: UsersDbManager.sync_get_context(message.chat.id).startswith('wait_phone_number'),
+                    content_types=['text'])
+async def seller_registration_wait_patronymic(message):
+    tel_id = message.chat.id
+    agent_id = await UsersDbManager.get_context(tel_id, loop)
+    agent_id = agent_id.split('-')[-1]
+    phone_number = message.text
     if not PHONE_MASK.match(message.text):
         await bot.send_message(tel_id, msg.not_correct_phone_format, disable_notification=True, parse_mode='html')
         return
@@ -583,10 +653,15 @@ async def seller_registration_wait_patronymic(message):
                                disable_notification=True, parse_mode='html')
         await UsersDbManager.update_context(tel_id, f'0', loop)
         return
-    text = 'Введите ID агента'
-    await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+    agent_descr = await RDB.get_agent_description(agent_id, loop)
+    await UsersDbManager.create_user(phone_number, agent_id, loop)
+    await UsersDbManager.update_descr_by_phone(phone_number, re.sub(' +', ' ', str(agent_descr[0][1]).strip()),
+                                               loop)
+    await UsersDbManager.update_context(tel_id, '0', loop)
+    text = f"Агент <b><u>{re.sub(' +', ' ', str(agent_descr[0][1]).strip())}({message.text})</u></b> " \
+           f"с номером телефона <b><u>{phone_number}</u></b> добавлен!"
+    await bot.send_message(tel_id, text, reply_markup=mk.admin_menu,
                            disable_notification=True, parse_mode='html')
-    await UsersDbManager.update_context(tel_id, f'wait_agent_id-{message.text}', loop)
 
 
 @dp.message_handler(lambda message: UsersDbManager.sync_get_context(message.chat.id).startswith('wait_agent_id-'),
@@ -820,11 +895,15 @@ async def choose_language(call: types.CallbackQuery):
             points.append(client[4])
             if client[5] is not None:
                 if client[6] == 'S' or client[6] is None:
-                    text += '\n' + msg.expeditor_client_shipped_text.format(client_name, client[4], str(client[5]).split()[1][:5]) + '\n '
+                    text += '\n' + msg.expeditor_client_shipped_text.format(client_name, client[4],
+                                                                            str(client[5]).split()[1][:5]) + '\n '
                 elif client[6] == 'SA':
-                    text += '\n' + msg.expeditor_client_shipped_with_adjustment_text.format(client_name, client[4], str(client[5]).split()[1][:5]) + '\n '
+                    text += '\n' + msg.expeditor_client_shipped_with_adjustment_text.format(client_name, client[4],
+                                                                                            str(client[5]).split()[1][
+                                                                                            :5]) + '\n '
                 else:
-                    text += '\n' + msg.expeditor_client_refused_text.format(client_name, client[4], str(client[5]).split()[1][:5]) + '\n '
+                    text += '\n' + msg.expeditor_client_refused_text.format(client_name, client[4],
+                                                                            str(client[5]).split()[1][:5]) + '\n '
             else:
                 text += '\n' + msg.expeditor_client_on_way_text.format(client_name, client[4]) + '\n '
     keyb = InlineKeyboardMarkup()
@@ -835,7 +914,7 @@ async def choose_language(call: types.CallbackQuery):
         await bot.edit_message_text(res_text[0], tel_id, call.message.message_id, parse_mode='html', reply_markup=keyb)
     else:
         for t in res_text:
-            if t != res_text[len(res_text)-1]:
+            if t != res_text[len(res_text) - 1]:
                 await bot.send_message(tel_id, t, parse_mode='html')
             else:
                 await bot.send_message(tel_id, t, parse_mode='html', reply_markup=keyb)
@@ -888,6 +967,7 @@ async def choose_language(call: types.CallbackQuery):
         await bot.send_message(tel_id, msg.no_clients_today,
                                reply_markup=mk.main_menu(call.message.from_user.username in ADMINS), parse_mode='html',
                                disable_notification=True)
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
