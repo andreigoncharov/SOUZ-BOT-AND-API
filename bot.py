@@ -83,7 +83,12 @@ async def c_list_def(message):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
+    text = 'Поиск информации...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
     clients = await RDB.get_client_names(user.id_in_db, loop)
+    await bot.delete_message(tel_id, mess.message_id)
+
     if len(clients) > 1:
         sorted_clients = []
         for client in clients:
@@ -109,7 +114,11 @@ async def c_list_def(message):
 async def show_zn_inl(inline_query):
     tel_id = inline_query.from_user.id
     user = await UsersDbManager.get_user(tel_id, loop)
+    text = 'Поиск информации...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
     clients = await RDB.get_clients(user.id_in_db, loop)
+    await bot.delete_message(tel_id, mess.message_id)
     # expeditors_and_routes = await RDB.get_unique_expeditor_routes_by_agent(AGENT, loop)
     sorted_clients = []
     expeditor_routes = []
@@ -207,7 +216,11 @@ async def choose_language(call: types.CallbackQuery):
                                disable_notification=True, parse_mode='html')
         return
     callback_data = call.data.split('*')[-1]
+    text = 'Поиск информации...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
     orders = await RDB.get_client_info(callback_data, loop)
+    await bot.delete_message(tel_id, mess.message_id)
     item_description = msg.client_header.format(f"{re.sub(' +', ' ', str(orders[0][1]).strip())} ")
     exped = []
     for order in orders:
@@ -263,7 +276,11 @@ async def choose_language(call: types.CallbackQuery):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
+    text = 'Поиск информации...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
     clients = await RDB.get_client_names(user.id_in_db, loop)
+    await bot.delete_message(tel_id, mess.message_id)
     if len(clients) > 1:
         sorted_clients = []
         for client in clients:
@@ -297,7 +314,12 @@ async def c_list_def(message):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
+    text = 'Поиск информации...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
+
     clients = await RDB.get_all_expeditors(user.id_in_db, loop)
+    await bot.delete_message(tel_id, mess.message_id)
     if len(clients) > 0:
         sorted_clients = []
         for client in clients:
@@ -324,7 +346,11 @@ async def c_list_def(message):
 async def show_zn_inl(inline_query):
     tel_id = inline_query.from_user.id
     user = await UsersDbManager.get_user(tel_id, loop)
+    text = 'Поиск информации...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
     clients = await RDB.get_all_expeditors(user.id_in_db, loop)
+    await bot.delete_message(tel_id, mess.message_id)
 
     if len(clients) == 0:
         result_id = str(uuid.uuid4())
@@ -390,6 +416,10 @@ async def choose_language(call: types.CallbackQuery):
                                disable_notification=True, parse_mode='html')
         return
     expeditor_id = call.data.split('*')[-1]
+    text = 'Поиск информации...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
+
     clients = await RDB.get_expeditor_clients_by_agent(user.id_in_db, expeditor_id, loop)
     text = msg.expeditor_header_with_phone.format(
         f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
@@ -429,12 +459,15 @@ async def choose_language(call: types.CallbackQuery):
         InlineKeyboardButton("⬅️ Список экспедиторов", callback_data=f"expeditors_back"))
     res_text = split_message(text)
     if len(res_text) == 1:
+        await bot.delete_message(tel_id, mess.message_id)
         await bot.edit_message_text(res_text[0], tel_id, call.message.message_id, parse_mode='html', reply_markup=keyb)
     else:
         for t in res_text:
             if t != res_text[len(res_text) - 1]:
+                await bot.delete_message(tel_id, mess.message_id)
                 await bot.send_message(tel_id, t, parse_mode='html')
             else:
+                await bot.delete_message(tel_id, mess.message_id)
                 await bot.send_message(tel_id, t, parse_mode='html', reply_markup=keyb)
 
 
@@ -447,6 +480,7 @@ async def choose_language(call: types.CallbackQuery):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
+
     clients = await RDB.get_all_expeditors(user.id_in_db, loop)
     if len(clients) > 1:
         sorted_clients = []
@@ -481,7 +515,12 @@ async def reff_link(message):
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
+    text = 'Поиск информации...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
+
     clients = await RDB.get_clients(user.id_in_db, loop)
+    await bot.delete_message(tel_id, mess.message_id)
 
     if len(clients) > 0:
         text = ''
