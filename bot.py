@@ -866,7 +866,11 @@ def normalize_phone_number_plus(phone_number):
 @dp.message_handler(lambda message: message.text == '🚛 Все экспедиторы')
 async def reff_link(message):
     tel_id = message.chat.id
+    text = 'Поиск агента ...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
     clients = await RDB.get_expeditors(loop)
+    await bot.delete_message(tel_id, mess.message_id)
     if len(clients) > 0:
         sorted_clients = []
         for client in clients:
@@ -911,8 +915,12 @@ async def choose_language(call: types.CallbackQuery):
                                disable_notification=True, parse_mode='html')
         return
     expeditor_id = call.data.split('*')[-1]
+    text = 'Поиск агента ...'
+    mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
+                                  disable_notification=True, parse_mode='html')
     clients = await RDB.get_expeditor_clients(expeditor_id, loop)
-    print(str(clients[0][7]), normalize_phone_number_plus(str(clients[0][7])))
+    await bot.delete_message(tel_id, mess.message_id)
+    # print(str(clients[0][7]), normalize_phone_number_plus(str(clients[0][7])))
     text = msg.expeditor_header_with_phone.format(
         f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
     routes = []
