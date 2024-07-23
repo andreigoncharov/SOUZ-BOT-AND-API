@@ -866,7 +866,7 @@ def normalize_phone_number_plus(phone_number):
 @dp.message_handler(lambda message: message.text == '🚛 Все экспедиторы')
 async def reff_link(message):
     tel_id = message.chat.id
-    text = 'Поиск агента ...'
+    text = 'Поиск ...'
     mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
                                   disable_notification=True, parse_mode='html')
     clients = await RDB.get_expeditors(loop)
@@ -915,7 +915,7 @@ async def choose_language(call: types.CallbackQuery):
                                disable_notification=True, parse_mode='html')
         return
     expeditor_id = call.data.split('*')[-1]
-    text = 'Поиск агента ...'
+    text = 'Поиск ...'
     mess = await bot.send_message(tel_id, text, reply_markup=mk.cancel,
                                   disable_notification=True, parse_mode='html')
     clients = await RDB.get_expeditor_clients(expeditor_id, loop)
