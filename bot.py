@@ -29,6 +29,10 @@ RDB = RemoteDbManager()
 @dp.message_handler(commands=['start'])
 async def start(message: Message):
     tel_id = message.chat.id
+    if tel_id in mk.LOW_ADMINS:
+        await bot.send_message(tel_id, msg.start_text, reply_markup=mk.main_menu(tel_id),
+                               disable_notification=True, parse_mode='html')
+
     if not await UsersDbManager.user_exist(tel_id, loop):
         text = msg.start_text_new_user
         await bot.send_message(tel_id, text, reply_markup=mk.phone_number,
