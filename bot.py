@@ -19,8 +19,6 @@ dp = Dispatcher(bot)
 # if DEBUG:
 #     logging.basicConfig(level=logging.DEBUG)
 
-ADMINS = [420404892, 650989290, 301735028, 5026697380]#['AndreiGoncharov', 'maksym_hryhorovych']
-
 PHONE_MASK = re.compile(r'^380\d{9}$')
 
 RDB = RemoteDbManager()
@@ -37,13 +35,13 @@ async def start(message: Message):
                                disable_notification=True, parse_mode='html')
         return
     user = await UsersDbManager.get_user(tel_id, loop)
-    print(user.is_blocked)
+
     if user.is_blocked == 1 or user.is_blocked == True:
         text = msg.user_not_exists
         await bot.send_message(tel_id, text,
                                disable_notification=True, parse_mode='html')
         return
-    await bot.send_message(tel_id, msg.start_text, reply_markup=mk.main_menu(tel_id in ADMINS),
+    await bot.send_message(tel_id, msg.start_text, reply_markup=mk.main_menu(tel_id),
                            disable_notification=True, parse_mode='html')
 
 
@@ -62,7 +60,7 @@ async def handle_contact(message: types.Message):
         else:
             await UsersDbManager.update_tel_id(tel_id, phone_number, loop)
             await bot.send_message(tel_id, msg.start_text,
-                                   reply_markup=mk.main_menu(tel_id in ADMINS),
+                                   reply_markup=mk.main_menu(tel_id),
                                    disable_notification=True, parse_mode='html')
     else:
         text = msg.start_text_new_user_2
@@ -338,7 +336,7 @@ async def c_list_def(message):
                                disable_notification=True)
     else:
         await bot.send_message(tel_id, msg.no_clients_today,
-                               reply_markup=mk.main_menu(tel_id in ADMINS), parse_mode='html',
+                               reply_markup=mk.main_menu(tel_id), parse_mode='html',
                                disable_notification=True)
 
 
@@ -558,7 +556,7 @@ async def reff_link(message):
     else:
         text = msg.no_clients_today
 
-    await bot.send_message(tel_id, text, reply_markup=mk.main_menu(tel_id in ADMINS),
+    await bot.send_message(tel_id, text, reply_markup=mk.main_menu(tel_id),
                            disable_notification=True, parse_mode='html')
 
 
@@ -581,7 +579,7 @@ async def reff_link(message):
 async def reff_link(message):
     tel_id = message.chat.id
     text = 'Главное меню'
-    await bot.send_message(tel_id, text, reply_markup=mk.main_menu(tel_id in ADMINS),
+    await bot.send_message(tel_id, text, reply_markup=mk.main_menu(tel_id),
                            disable_notification=True, parse_mode='html')
 
 
@@ -889,7 +887,7 @@ async def reff_link(message):
                                disable_notification=True)
     else:
         await bot.send_message(tel_id, msg.no_clients_today,
-                               reply_markup=mk.main_menu(tel_id in ADMINS), parse_mode='html',
+                               reply_markup=mk.main_menu(tel_id), parse_mode='html',
                                disable_notification=True)
 
 
@@ -1013,7 +1011,7 @@ async def choose_language(call: types.CallbackQuery):
                                disable_notification=True)
     else:
         await bot.send_message(tel_id, msg.no_clients_today,
-                               reply_markup=mk.main_menu(tel_id in ADMINS), parse_mode='html',
+                               reply_markup=mk.main_menu(tel_id), parse_mode='html',
                                disable_notification=True)
 
 

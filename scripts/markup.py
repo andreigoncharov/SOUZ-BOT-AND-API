@@ -4,17 +4,25 @@ phone_number = ReplyKeyboardMarkup(resize_keyboard=True). \
     add(KeyboardButton(text='Отправить номер телефона', request_contact=True))
 
 
-def main_menu(isAdmin):
-    if not isAdmin:
+ADMINS = [420404892, 301735028]#['AndreiGoncharov', 'maksym_hryhorovych']
+LOW_ADMINS = [650989290, 5026697380]
+
+
+def main_menu(tel_id):
+    if tel_id not in ADMINS and tel_id not in LOW_ADMINS:
         return reply_keyboard.ReplyKeyboardMarkup([['ℹ️ Статусы доставки'], ['👥  Клиенты'], ['🚛 Экспедиторы']], resize_keyboard=True)
-    else:
+    elif tel_id in ADMINS:
         return reply_keyboard.ReplyKeyboardMarkup([['ℹ️ Статусы доставки'], ['👥  Клиенты'], ['🚛 Экспедиторы'], ['👑 Админ']],
+                                           resize_keyboard=True)
+    elif tel_id in LOW_ADMINS:
+        return reply_keyboard.ReplyKeyboardMarkup([['🚛 Экспедиторы']],
                                            resize_keyboard=True)
 
 
 admin_menu = reply_keyboard.ReplyKeyboardMarkup([['✅ Добавить агента'], ['⛔️ Исключить агента'], ['🚛 Все экспедиторы'],
                                                   ['⬅️ Главное меню']],
                                                 resize_keyboard=True)
+
 
 cancel = reply_keyboard.ReplyKeyboardMarkup([['❌ Отменить']],
                                                 resize_keyboard=True)
