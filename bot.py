@@ -619,7 +619,7 @@ async def reff_link(message):
     await UsersDbManager.update_context(tel_id, 'wait_agent_surname', loop)
 
 
-@dp.message_handler(lambda message: UsersDbManager.sync_get_context(message.chat.id) == 'wait_agent_surname',
+@dp.message_handler(lambda message: str(UsersDbManager.sync_get_context(message.chat.id)) == 'wait_agent_surname',
                     content_types=['text'])
 async def seller_registration_wait_patronymic(message):
     tel_id = message.chat.id
@@ -679,7 +679,7 @@ async def choose_language(call: types.CallbackQuery):
     await UsersDbManager.update_context(tel_id, f'wait_phone_number-{agent_id}', loop)
 
 
-@dp.message_handler(lambda message: UsersDbManager.sync_get_context(message.chat.id).startswith('wait_phone_number'),
+@dp.message_handler(lambda message: str(UsersDbManager.sync_get_context(message.chat.id)).startswith('wait_phone_number'),
                     content_types=['text'])
 async def seller_registration_wait_patronymic(message):
     tel_id = message.chat.id
@@ -706,7 +706,7 @@ async def seller_registration_wait_patronymic(message):
                            disable_notification=True, parse_mode='html')
 
 
-@dp.message_handler(lambda message: UsersDbManager.sync_get_context(message.chat.id).startswith('wait_agent_id-'),
+@dp.message_handler(lambda message: str(UsersDbManager.sync_get_context(message.chat.id)).startswith('wait_agent_id-'),
                     content_types=['text'])
 async def seller_registration_wait_patronymic(message):
     tel_id = message.chat.id
@@ -781,7 +781,7 @@ async def choose_language(call: types.CallbackQuery):
     await bot.send_message(tel_id, text, reply_markup=mk.admin_menu, disable_notification=True, parse_mode='html')
 
 
-@dp.message_handler(lambda message: UsersDbManager.sync_get_context(message.chat.id) == 'kick_wait_phone_number',
+@dp.message_handler(lambda message: str(UsersDbManager.sync_get_context(message.chat.id)) == 'kick_wait_phone_number',
                     content_types=['text'])
 async def seller_registration_wait_patronymic(message):
     tel_id = message.chat.id
@@ -814,7 +814,7 @@ async def reff_link(message):
     await UsersDbManager.update_context(tel_id, 'kick_wait_agent_id', loop)
 
 
-@dp.message_handler(lambda message: UsersDbManager.sync_get_context(message.chat.id) == 'kick_wait_agent_id',
+@dp.message_handler(lambda message: str(UsersDbManager.sync_get_context(message.chat.id)) == 'kick_wait_agent_id',
                     content_types=['text'])
 async def seller_registration_wait_patronymic(message):
     tel_id = message.chat.id
