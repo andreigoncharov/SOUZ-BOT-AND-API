@@ -15,7 +15,7 @@ def main_menu(tel_id):
         return reply_keyboard.ReplyKeyboardMarkup([['ℹ️ Статусы доставки'], ['👥  Клиенты'], ['🚛 Экспедиторы'], ['👑 Админ']],
                                            resize_keyboard=True)
     elif tel_id in LOW_ADMINS:
-        return reply_keyboard.ReplyKeyboardMarkup([['🚛 Экспедиторы']],
+        return reply_keyboard.ReplyKeyboardMarkup([['🚛 Все экспедиторы']],
                                            resize_keyboard=True)
 
 
