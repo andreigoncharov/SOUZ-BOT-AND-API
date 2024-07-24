@@ -478,11 +478,15 @@ async def choose_language(call: types.CallbackQuery):
 async def choose_language(call: types.CallbackQuery):
     tel_id = call.from_user.id
     user = await UsersDbManager.get_user(tel_id, loop)
-    if user.is_blocked:
-        text = msg.user_not_exists
-        await bot.send_message(tel_id, text,
-                               disable_notification=True, parse_mode='html')
-        return
+    if user is not None:
+        if user.is_blocked:
+            text = msg.user_not_exists
+            await bot.send_message(tel_id, text,
+                                   disable_notification=True, parse_mode='html')
+            return
+    else:
+        if tel_id not in mk.ADMINS and tel_id not in mk.LOW_ADMINS:
+            return
 
     clients = await RDB.get_all_expeditors(user.id_in_db, loop)
     if len(clients) > 1:
