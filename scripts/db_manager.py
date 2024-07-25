@@ -186,17 +186,25 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
         conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute("""SELECT 
-    [CustomerId], 
+    [ExpeditorId], 
     [DockNo], 
     [Status], 
-    [TimeStamp]
 FROM 
     ExpeditorCheckouts
 WHERE 
-    CAST([TimeStamp] AS DATE) = CAST(DATEADD(DAY, -2, GETDATE()) AS DATE)""")
+    CAST([TimeStamp] AS DATE) = CAST(GETDATE() AS DATE)""")#CAST(DATEADD(DAY, -2, GETDATE()) AS DATE) AND [Status] IN ('SA', 'R')
         rows = cursor.fetchall()
         conn.close()
         return rows
+
+    async def get_expeditor_name(self, expeditor_id, loop):
+            conn = self.get_conn(loop)
+            cursor = conn.cursor()
+            cursor.execute(f"""SELECT [DESCR] FROM [192.168.3.18].[SOUZ].dbo.[sc703]
+WHERE LTRIM(RTRIM([id])) = '{expeditor_id}';""")
+            rows = cursor.fetchall()
+            conn.close()
+            return rows
 
 
 class UsersDbManager:
