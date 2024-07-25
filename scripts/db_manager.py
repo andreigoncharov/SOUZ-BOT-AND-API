@@ -201,7 +201,7 @@ WHERE
             conn = self.get_conn(loop)
             cursor = conn.cursor()
             cursor.execute(f"""SELECT [DESCR] FROM [192.168.3.18].[SOUZ].dbo.[sc703]
-WHERE LTRIM(RTRIM([id])) = '{expeditor_id}';""")
+WHERE [id] = '{expeditor_id}';""")
             rows = cursor.fetchall()
             conn.close()
             return rows
