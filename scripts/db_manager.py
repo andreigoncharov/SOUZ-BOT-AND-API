@@ -216,6 +216,14 @@ WHERE [id] = '{expeditor_id}';""")
         conn.close()
         return rows
 
+    async def get_point_by_dock(self, doc, loop):
+        conn = self.get_conn(loop)
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT [Route], [Order] FROM [Orders].[dbo].[yesterday_bot_view]
+    WHERE [DockNo] = '{doc}';""")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
 
 class UsersDbManager:
     @staticmethod
