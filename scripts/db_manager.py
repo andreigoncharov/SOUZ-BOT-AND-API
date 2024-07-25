@@ -29,6 +29,12 @@ class RemoteDbManager:
         self.conn = None
         self.conn = self.get_conn()
 
+    def close_connection(self):
+        try:
+            self.conn.close()
+        except:
+            pass
+
     def get_conn(self, loop=None):
         if self.conn:
             try:
@@ -172,6 +178,23 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
         like_pattern = f"%{description}%"
         cursor.execute("""SELECT [ID], [DESCR] FROM [Orders].[dbo].[agent_info]
         WHERE LTRIM(RTRIM([DESCR])) LIKE ?;""", (like_pattern))
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+
+    async def get_yesterday_docs(self, loop):
+        conn = self.get_conn(loop)
+        cursor = conn.cursor()
+        cursor.execute("""SELECT 
+    [CustomerId], 
+    [DockNo], 
+    [Status], 
+    [TimeStamp]
+FROM 
+    ExpeditorCheckouts
+WHERE 
+    CAST([TimeStamp] AS DATE) = DATEADD(DAY, -1, CAST(GETDATE() AS DATE))
+""")
         rows = cursor.fetchall()
         conn.close()
         return rows
