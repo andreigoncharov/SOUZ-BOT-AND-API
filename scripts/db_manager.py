@@ -219,7 +219,7 @@ WHERE [id] = '{expeditor_id}';""")
     async def get_point_by_dock(self, doc, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT CAST(SP1797 AS INT), CAST(SP1197 AS INT) FROM [192.168.3.18].[SOUZ].dbo.[sc137]
+        cursor.execute(f"""SELECT CAST(SP1797 AS INT), CAST(SP1197 AS INT) FROM [192.168.3.18].[SOUZ].dbo.[DH640]
          WHERE [IDDOC] = '{doc}';""")
         rows = cursor.fetchall()
         conn.close()
