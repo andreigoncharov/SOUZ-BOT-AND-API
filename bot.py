@@ -1035,6 +1035,7 @@ async def reff_link(message):
     mess = await bot.send_message(tel_id, text,
                                   disable_notification=True, parse_mode='html')
     clients = await RDB.get_expeditors(loop)
+    print(clients)
     if len(clients) > 0:
         sorted_clients = []
         for client in clients:
