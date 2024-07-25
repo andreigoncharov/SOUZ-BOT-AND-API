@@ -68,7 +68,8 @@ async def main():
         for key, value in expeditors.items():
             new_arr = []
             for ord in value:
-                route = await rdb.get_point_by_dock(ord[1], loop)[0]
+                route = await rdb.get_point_by_dock(ord[1], loop)
+                route = route[0]
                 print(ord, route)
                 new_arr.append([ord[0], ord[1], ord[2], route[0], route[1]])
             expeditors[key] = new_arr
