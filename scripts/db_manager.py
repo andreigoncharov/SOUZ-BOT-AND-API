@@ -219,8 +219,9 @@ WHERE [id] = '{expeditor_id}';""")
     async def get_point_by_dock(self, doc, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT CAST(SP1797 AS INT), CAST(SP1197 AS INT) FROM [192.168.3.18].[SOUZ].dbo.[DH640]
-         WHERE [iddoc] = '{doc}';""")
+        # cursor.execute(f"""SELECT CAST(SP1797 AS INT), CAST(SP1197 AS INT) FROM [192.168.3.18].[SOUZ].dbo.[DH640]
+        #  WHERE [iddoc] = '{doc}';""")
+        cursor.execute("SELECT TOP 1 * FROM [192.168.3.18].[SOUZ].dbo.[DH640] ORDER BY id DESC;")
         rows = cursor.fetchall()
         conn.close()
         return rows
