@@ -19,6 +19,7 @@ async def main():
             expeditors[order[0]].append([order[1], order[2]])
         for ex in expeditors:
             expeditor_names[ex] = await rdb.get_expeditor_name(ex, loop)
+        print(expeditors)
         print(expeditor_names)
 
 asyncio.run(main())
