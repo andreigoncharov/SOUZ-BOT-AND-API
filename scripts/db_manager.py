@@ -193,7 +193,7 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
 FROM 
     [Orders].[dbo].[ExpeditorCheckouts]
 WHERE 
-    CAST([TimeStamp] AS DATE) = CAST(GETDATE() AS DATE)""")#CAST(DATEADD(DAY, -2, GETDATE()) AS DATE) AND [Status] IN ('SA', 'R')
+    CAST([TimeStamp] AS DATE) = CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)""")#CAST(DATEADD(DAY, -2, GETDATE()) AS DATE) AND [Status] IN ('SA', 'R')
         rows = cursor.fetchall()
         conn.close()
         return rows
@@ -219,8 +219,8 @@ WHERE [id] = '{expeditor_id}';""")
     async def get_point_by_dock(self, doc, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT [Route], [Order] FROM [Orders].[dbo].[yesterday_bot_view]
-    WHERE [DockNo] = {doc};""")
+        cursor.execute(f"""SELECT [Route], [Order] FROM [Orders].[dbo].[yesterday_bot_view] WHERE 
+        [DockNo] = '{doc}';""")
         rows = cursor.fetchall()
         conn.close()
         return rows
