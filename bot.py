@@ -1035,7 +1035,6 @@ async def reff_link(message):
     mess = await bot.send_message(tel_id, text,
                                   disable_notification=True, parse_mode='html')
     clients = await RDB.get_expeditors(loop)
-    await bot.delete_message(tel_id, mess.message_id)
     if len(clients) > 0:
         sorted_clients = []
         for client in clients:
@@ -1047,6 +1046,7 @@ async def reff_link(message):
                         c[2].append(client)
                         break
         for client in sorted_clients:
+            print(client)
             clients = await RDB.get_expeditor_clients(client, loop)
             await bot.delete_message(tel_id, mess.message_id)
             text = msg.expeditor_header_with_phone.format(
@@ -1063,6 +1063,7 @@ async def reff_link(message):
                     if is_all_points(clients, client[3]):
                         text += f'\n {msg.all_points_complete} \n '
                     routes.append(client[3])
+        await bot.delete_message(tel_id, mess.message_id)
         print(text)
     else:
         await bot.send_message(tel_id, msg.no_clients_today,
