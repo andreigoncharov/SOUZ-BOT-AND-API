@@ -188,7 +188,7 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
         cursor.execute("""SELECT 
     [ExpeditorId], 
     [DockNo], 
-    [Status], 
+    [Status]
 FROM 
     [Orders].[dbo].[ExpeditorCheckouts]
 WHERE 
