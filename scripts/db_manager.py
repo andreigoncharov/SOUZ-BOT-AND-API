@@ -220,7 +220,7 @@ WHERE [id] = '{expeditor_id}';""")
         conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT [Route], [Order] FROM [Orders].[dbo].[yesterday_bot_view]
-    WHERE [DockNo] = '{doc}';""")
+    WHERE [DockNo] = {doc};""")
         rows = cursor.fetchall()
         conn.close()
         return rows
