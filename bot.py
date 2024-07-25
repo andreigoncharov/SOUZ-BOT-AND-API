@@ -1047,7 +1047,7 @@ async def reff_link(message):
                         break
         for client in sorted_clients:
             print(client)
-            clients = await RDB.get_expeditor_clients(client, loop)
+            clients = await RDB.get_expeditor_clients(client[0], loop)
             await bot.delete_message(tel_id, mess.message_id)
             text = msg.expeditor_header_with_phone.format(
                 f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
