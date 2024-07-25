@@ -1048,21 +1048,22 @@ async def reff_link(message):
         for client in sorted_clients:
             print(client)
             clients = await RDB.get_expeditor_clients(client[0], loop)
-            await bot.delete_message(tel_id, mess.message_id)
-            text = msg.expeditor_header_with_phone.format(
-                f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
-            routes = []
-            for client in clients:
-                if client[3] not in routes:
-                    if routes != []:
-                        text += '\n ---------- \n '
-                    last_checkin = find_last_checkin(clients, client[3])
-                    text += f'''\n Маршрут: {client[3]}; Последний чекин: '''
-                    text += f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5] if last_checkin[1] != 'None' else '-----'}" if last_checkin != -1 else '-----'
-                    text += ' \n'
-                    if is_all_points(clients, client[3]):
-                        text += f'\n {msg.all_points_complete} \n '
-                    routes.append(client[3])
+            print(clients)
+            # await bot.delete_message(tel_id, mess.message_id)
+            # text = msg.expeditor_header_with_phone.format(
+            #     f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
+            # routes = []
+            # for client in clients:
+            #     if client[3] not in routes:
+            #         if routes != []:
+            #             text += '\n ---------- \n '
+            #         last_checkin = find_last_checkin(clients, client[3])
+            #         text += f'''\n Маршрут: {client[3]}; Последний чекин: '''
+            #         text += f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5] if last_checkin[1] != 'None' else '-----'}" if last_checkin != -1 else '-----'
+            #         text += ' \n'
+            #         if is_all_points(clients, client[3]):
+            #             text += f'\n {msg.all_points_complete} \n '
+            #         routes.append(client[3])
         await bot.delete_message(tel_id, mess.message_id)
         print(text)
     else:
