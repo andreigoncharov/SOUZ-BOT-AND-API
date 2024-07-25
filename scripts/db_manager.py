@@ -193,8 +193,7 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
 FROM 
     ExpeditorCheckouts
 WHERE 
-    [TimeStamp] >= DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) AND
-    [TimeStamp] < CAST(GETDATE() AS DATE)""")
+    CAST([TimeStamp] AS DATE) = CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)""")
         rows = cursor.fetchall()
         conn.close()
         return rows
