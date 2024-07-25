@@ -193,7 +193,7 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
 FROM 
     ExpeditorCheckouts
 WHERE 
-    CAST([TimeStamp] as DATE) = CAST('20240723' AS date)""")
+    CAST([TimeStamp] as DATE) = CAST('20240724' AS DATE)""")
         rows = cursor.fetchall()
         conn.close()
         return rows
