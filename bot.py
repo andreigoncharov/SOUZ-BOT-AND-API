@@ -1028,5 +1028,46 @@ async def choose_language(call: types.CallbackQuery):
                                disable_notification=True)
 
 
+@dp.message_handler(lambda message: message.text == '📍 Последние чекины')
+async def reff_link(message):
+    tel_id = message.chat.id
+    text = 'Поиск ...'
+    mess = await bot.send_message(tel_id, text,
+                                  disable_notification=True, parse_mode='html')
+    clients = await RDB.get_expeditors(loop)
+    await bot.delete_message(tel_id, mess.message_id)
+    if len(clients) > 0:
+        sorted_clients = []
+        for client in clients:
+            if not any(sublist[0] == client[0] for sublist in sorted_clients):
+                sorted_clients.append([client[0], client[1], [client]])
+            else:
+                for c in sorted_clients:
+                    if c[0] == client[0]:
+                        c[2].append(client)
+                        break
+        for client in sorted_clients:
+            clients = await RDB.get_expeditor_clients(client, loop)
+            await bot.delete_message(tel_id, mess.message_id)
+            text = msg.expeditor_header_with_phone.format(
+                f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
+            routes = []
+            for client in clients:
+                if client[3] not in routes:
+                    if routes != []:
+                        text += '\n ---------- \n '
+                    last_checkin = find_last_checkin(clients, client[3])
+                    text += f'''\n Маршрут: {client[3]}; Последний чекин: '''
+                    text += f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5] if last_checkin[1] != 'None' else '-----'}" if last_checkin != -1 else '-----'
+                    text += ' \n'
+                    if is_all_points(clients, client[3]):
+                        text += f'\n {msg.all_points_complete} \n '
+                    routes.append(client[3])
+        print(text)
+    else:
+        await bot.send_message(tel_id, msg.no_clients_today,
+                               reply_markup=mk.main_menu(tel_id), parse_mode='html',
+                               disable_notification=True)
+
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
