@@ -186,7 +186,8 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
         conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute("""SELECT 
-    [ExpeditorId], 
+    [ExpeditorId],
+    [CustomerId],
     [DockNo], 
     [Status]
 FROM 
@@ -205,6 +206,15 @@ WHERE [id] = '{expeditor_id}';""")
             rows = cursor.fetchall()
             conn.close()
             return rows
+
+    async def get_customer_description(self, customer_id, loop):
+        conn = self.get_conn(loop)
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT [code], [DESCR] FROM [Orders].[dbo].[sc137]
+    WHERE [ID] = '{customer_id}';""")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
 
 
 class UsersDbManager:

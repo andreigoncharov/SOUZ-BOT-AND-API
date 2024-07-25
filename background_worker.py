@@ -6,6 +6,7 @@ from scripts.db_manager import RemoteDbManager
 loop = asyncio.get_event_loop()
 rdb = RemoteDbManager()
 
+
 async def main():
     global rdb
     orders = await rdb.get_yesterday_docs(loop)
@@ -13,13 +14,25 @@ async def main():
     if len(orders) > 0:
         expeditors = {}
         expeditor_names = {}
+        customers = []
+        customer_names = {}
         for order in orders:
             if order[0] not in expeditors:
                 expeditors[order[0]] = []
-            expeditors[order[0]].append([order[1], order[2]])
-        for ex in expeditors:
-            expeditor_names[ex] = await rdb.get_expeditor_name(ex, loop)
+            if order[1] not in customers:
+                customers.append(order[1])
+            expeditors[order[0]].append([order[1], order[2], order[3]])
+        for expeditor in expeditors:
+            expeditor_names[expeditor] = await rdb.get_expeditor_name(expeditor, loop)
+        for customer in customers:
+            customer_names[customer] = await rdb.get_customer_description(customer, loop)
         print(expeditors)
         print(expeditor_names)
+        print(customers)
+        print(customer_names)
+
 
 asyncio.run(main())
+
+# {'    DLSPO': [['SPO0000489781', 'S'], ['SPO0000492667', 'S'], ['SPO0000490075', 'S'], ['SPO0000492691', 'S'], ['SPO0000493076', 'S'], ['SPO0000491247', 'S'], ['SPO0000492714', 'S'], ['SPO0000493079', 'S'], ['SPO0000493080', 'S'], ['SPO0000492735', 'S'], ['SPO0000492499', 'S'], ['SPO0000493042', 'S'], ['SPO0000492736', 'S'], ['SPO0000491923', 'S'], ['SPO0000492506', 'S'], ['SPO0000493084', 'S'], ['SPO0000491226', 'S'], ['SPO0000493039', 'S'], ['SPO0000492490', 'S'], ['SPO0000493037', 'S'], ['SPO0000491560', 'S'], ['SPO0000492485', 'S'], ['SPO0000493027', 'S']]}
+# {'    DLSPO': [('Беззуб                                  ',)]}
