@@ -211,7 +211,7 @@ WHERE [id] = '{expeditor_id}';""")
         conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT [code], [DESCR] FROM [192.168.3.18].[SOUZ].dbo.[sc137]
-    WHERE [ID] = '{customer_id}';""")
+    WHERE [code] = '{customer_id}';""")
         rows = cursor.fetchall()
         conn.close()
         return rows
