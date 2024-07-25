@@ -190,7 +190,7 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
     [DockNo], 
     [Status], 
 FROM 
-    ExpeditorCheckouts
+    [Orders].[dbo].[ExpeditorCheckouts]
 WHERE 
     CAST([TimeStamp] AS DATE) = CAST(GETDATE() AS DATE)""")#CAST(DATEADD(DAY, -2, GETDATE()) AS DATE) AND [Status] IN ('SA', 'R')
         rows = cursor.fetchall()
