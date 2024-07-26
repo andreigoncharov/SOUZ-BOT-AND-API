@@ -232,7 +232,7 @@ WHERE [id] = '{expeditor_id}';""")
         conn = self.get_conn(loop)
         cursor = conn.cursor()
         cursor.execute(f"""SELECT 
-            [DockNo], 
+            [DockNo]
         FROM 
             [Orders].[dbo].[ExpeditorCheckouts]
         WHERE 
