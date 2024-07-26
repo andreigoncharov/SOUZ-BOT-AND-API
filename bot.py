@@ -1047,7 +1047,7 @@ async def reff_link(message):
                         c[2].append(client)
                         break
         for client in sorted_clients:
-            text += f"{re.sub(' +', ' ', str(clients[0][0]).strip())}: "
+            text += f"{re.sub(' +', ' ', str(client[0]).strip())}: "
             checkins = await RDB.get_all_checkins(client[0], loop)
             if len(checkins) > 0:
                 formatted_docnums = ", ".join([f"'{x[0]}'" for x in checkins])
