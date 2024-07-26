@@ -1031,7 +1031,7 @@ async def choose_language(call: types.CallbackQuery):
 @dp.message_handler(lambda message: message.text == '📍 Последние чекины')
 async def reff_link(message):
     tel_id = message.chat.id
-    text = 'Поиск ...'
+    text = 'Поиск (занимает примерно 10 секунд)...'
     mess = await bot.send_message(tel_id, text,
                                   disable_notification=True, parse_mode='html')
     clients = await RDB.get_expeditors(loop)
