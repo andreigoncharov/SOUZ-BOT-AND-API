@@ -111,7 +111,6 @@ async def create_excel_file(expeditors, expeditor_names, customer_names):
 async def main():
     global rdb
     orders = await rdb.get_yesterday_docs(loop)
-    print(orders)
     now = datetime.datetime.now()
     yesterday = now - datetime.timedelta(days=1)
     formatted_date = yesterday.strftime("%d-%m-%Y")
