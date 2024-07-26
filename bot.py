@@ -1035,6 +1035,7 @@ async def reff_link(message):
     mess = await bot.send_message(tel_id, text,
                                   disable_notification=True, parse_mode='html')
     clients = await RDB.get_expeditors(loop)
+    text = ''
     if len(clients) > 0:
         sorted_clients = []
         for client in clients:
@@ -1046,6 +1047,7 @@ async def reff_link(message):
                         c[2].append(client)
                         break
         for client in sorted_clients:
+            text += f"{re.sub(' +', ' ', str(clients[0][0]).strip())}: "
             checkins = await RDB.get_all_checkins(client[0], loop)
             if len(checkins) > 0:
                 formatted_docnums = ", ".join([f"'{x[0]}'" for x in checkins])
@@ -1056,14 +1058,12 @@ async def reff_link(message):
                     value = item[2]
                     if key not in max_values or value > max_values[key]:
                         max_values[key] = value
-                print(max_values)
 
-                # Преобразуем словарь в список кортежей
-                result = [(key, max_value) for key, max_value in max_values.items()]
+                for key, max_value in max_values.items():
+                    text += f"маршрут {key} точка {max_value} в --- \n \n"
 
-            # await bot.delete_message(tel_id, mess.message_id)
-            # text = msg.expeditor_header_with_phone.format(
-            #     f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
+        print(text)
+
             # routes = []
             # for client in clients:
             #     if client[3] not in routes:
