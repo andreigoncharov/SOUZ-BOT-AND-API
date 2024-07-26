@@ -244,15 +244,6 @@ WHERE [id] = '{expeditor_id}';""")
     async def get_info_by_docnum(self, docnums, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()
-        # cursor.execute(f"""SELECT
-        #     [IDDOC] FROM [192.168.3.18].[SOUZ].dbo.[_1SJOURN]
-        # WHERE
-        #     [DOCNO] IN ({docnums})""")
-        # _1s_rows = cursor.fetchall()
-        # formatted_docnums = ", ".join([f"'{x[0]}'" for x in _1s_rows])
-        #
-        # cursor.execute(f"""SELECT CAST(SP1797 AS INT), CAST(SP1197 AS INT) FROM [192.168.3.18].[SOUZ].dbo.[DH640]
-        #                  WHERE [iddoc] IN ({formatted_docnums});""")
         cursor.execute(f"""
             SELECT 
                 _1SJOURN.DOCNO, 
@@ -271,6 +262,18 @@ WHERE [id] = '{expeditor_id}';""")
         conn.close()
         return rows
 
+    async def get_timestamp_by_docno(self, docno, loop):
+        conn = self.get_conn(loop)
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT 
+            [TimeStamp]
+        FROM 
+            [Orders].[dbo].[ExpeditorCheckouts]
+        WHERE 
+            [DocNo] = '{docno}'""")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
 
 class UsersDbManager:
     @staticmethod
