@@ -159,9 +159,8 @@ def start():
                 bot = Bot(TOKEN)
                 asyncio.run(bot.send_message(420404892, f"Ошибка отчета!\n \n {traceback.format_exc()}"))
 
-# schedule.every().day.at(time_to_send).do(start)
-#
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
-start()
+schedule.every().day.at(time_to_send).do(start)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
