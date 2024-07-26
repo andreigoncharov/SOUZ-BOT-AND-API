@@ -1061,7 +1061,10 @@ async def reff_link(message):
 
                 for key, max_value in max_values.items():
                     timestamp = await RDB.get_timestamp_by_docno(max_value[1], loop)
-                    text += f"маршрут {key} точка {max_value[0]} в {timestamp} \n \n"
+                    timestamp = timestamp[0][0]
+                    hours = timestamp.hour
+                    minutes = timestamp.minute
+                    text += f"маршрут {key} точка {max_value[0]} в {hours:02}:{minutes:02} \n \n"
             else:
                 text += "нет чекинов \n \n"
 
