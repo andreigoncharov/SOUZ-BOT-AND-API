@@ -244,15 +244,31 @@ WHERE [id] = '{expeditor_id}';""")
     async def get_info_by_docnum(self, docnums, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()
-        cursor.execute(f"""SELECT 
-            [IDDOC] FROM [192.168.3.18].[SOUZ].dbo.[_1SJOURN]
-        WHERE 
-            [DOCNO] IN ({docnums})""")
-        _1s_rows = cursor.fetchall()
-        print(_1s_rows)
+        # cursor.execute(f"""SELECT
+        #     [IDDOC] FROM [192.168.3.18].[SOUZ].dbo.[_1SJOURN]
+        # WHERE
+        #     [DOCNO] IN ({docnums})""")
+        # _1s_rows = cursor.fetchall()
+        # formatted_docnums = ", ".join([f"'{x[0]}'" for x in _1s_rows])
+        #
         # cursor.execute(f"""SELECT CAST(SP1797 AS INT), CAST(SP1197 AS INT) FROM [192.168.3.18].[SOUZ].dbo.[DH640]
-        #                  WHERE [iddoc] = '{_1s_rows[0][0]}';""")
-        # rows = cursor.fetchall()
+        #                  WHERE [iddoc] IN ({formatted_docnums});""")
+        cursor.execute(f"""
+            SELECT 
+                _1SJOURN.DOCNO, 
+                CAST(DH640.SP1797 AS INT) AS SP1797, 
+                CAST(DH640.SP1197 AS INT) AS SP1197
+            FROM 
+                [192.168.3.18].[SOUZ].dbo.[_1SJOURN] AS _1SJOURN
+            INNER JOIN 
+                [192.168.3.18].[SOUZ].dbo.[DH640] AS DH640
+            ON 
+                _1SJOURN.IDDOC = DH640.IDDOC
+            WHERE 
+                _1SJOURN.DOCNO IN ({docnums});
+        """)
+        rows = cursor.fetchall()
+        print(rows)
         conn.close()
         # return rows
 
