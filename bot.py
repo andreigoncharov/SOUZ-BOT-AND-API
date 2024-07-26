@@ -1050,7 +1050,16 @@ async def reff_link(message):
             if len(checkins) > 0:
                 formatted_docnums = ", ".join([f"'{x[0]}'" for x in checkins])
                 infos = await RDB.get_info_by_docnum(formatted_docnums, loop)
+                max_values = {}
+                for item in infos:
+                    key = item[1]
+                    value = item[2]
+                    if key not in max_values or value > max_values[key]:
+                        max_values[key] = value
+                print(max_values)
 
+                # Преобразуем словарь в список кортежей
+                result = [(key, max_value) for key, max_value in max_values.items()]
 
             # await bot.delete_message(tel_id, mess.message_id)
             # text = msg.expeditor_header_with_phone.format(

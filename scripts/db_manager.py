@@ -268,9 +268,8 @@ WHERE [id] = '{expeditor_id}';""")
                 _1SJOURN.DOCNO IN ({docnums});
         """)
         rows = cursor.fetchall()
-        print(rows)
         conn.close()
-        # return rows
+        return rows
 
 
 class UsersDbManager:
