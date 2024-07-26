@@ -1047,7 +1047,7 @@ async def reff_link(message):
                         c[2].append(client)
                         break
         for client in sorted_clients:
-            text += f"<b>{re.sub(' +', ' ', str(client[1]).strip())}:</b> "
+            text += f"<u><b>{re.sub(' +', ' ', str(client[1]).strip())}:</b></u> "
             checkins = await RDB.get_all_checkins(client[0], loop)
             if len(checkins) > 0:
                 formatted_docnums = ", ".join([f"'{x[0]}'" for x in checkins])
@@ -1060,7 +1060,8 @@ async def reff_link(message):
                         max_values[key] = [value, item[0]]
 
                 for key, max_value in max_values.items():
-                    text += f"маршрут {key} точка {max_value[0]} в {max_value[1]} \n \n"
+                    timestamp = await RDB.get_timestamp_by_docno(max_value[1], loop)
+                    text += f"маршрут {key} точка {max_value[0]} в {timestamp} \n \n"
             else:
                 text += "нет чекинов \n \n"
 
