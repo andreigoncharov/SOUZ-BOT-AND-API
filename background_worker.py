@@ -85,7 +85,7 @@ async def create_excel_file(expeditors, expeditor_names, customer_names):
         for order in value:
             ws.append(
                 [f"{re.sub(' +', ' ', str(customer_names.get(order[0])[0][1]).strip())}", order[1], order[3], order[4],
-                 order[2]])
+                 "Отказ" if order[2] == 'R' else "Отгружен с корректировкой"])
             row_counter += 1
         ws.append([])
         row_counter += 1
@@ -158,9 +158,8 @@ def start():
                 asyncio.run(bot.send_message(420404892, f"Ошибка отчета!\n \n {traceback.format_exc()}"))
 
 
-# schedule.every().day.at(time_to_send).do(start)
-#
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
-start()
+schedule.every().day.at(time_to_send).do(start)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
