@@ -1056,7 +1056,7 @@ async def reff_link(message):
                 for item in infos:
                     key = item[1]
                     value = item[2]
-                    if key not in max_values or value[0] > max_values[key]:
+                    if key not in max_values or value > max_values[key][0]:
                         max_values[key] = [value, item[0]]
 
                 for key, max_value in max_values.items():
