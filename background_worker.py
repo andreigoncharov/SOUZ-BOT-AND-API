@@ -24,7 +24,7 @@ import schedule
 Основные настройки
 """
 smtp_user = 'hryhorovych.maksym@gmail.com'  # аккаунт с которого будут идти письма
-smtp_password = 'hbld fneu hvua hf'  # пароль аккаунта с которого будут идти письма
+smtp_password = 'cjft ylcd lfcq sdcl'  # пароль аккаунта с которого будут идти письма
 
 from_address = 'hryhorovych.maksym@gmail.com'  # адрес с которого отправлять
 to_address = 'logist@union.kh.ua'  # адрес куда отправлять
