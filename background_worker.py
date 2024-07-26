@@ -62,7 +62,9 @@ async def send_email(file_name, date: str, isEmpty=False):
 
     try:
         server = smtplib.SMTP(smtp_server, smtp_port)
+        server.ehlo()
         server.starttls()
+        server.ehlo()
         server.login(smtp_user, smtp_password)
         text = msg.as_string()
         server.sendmail(from_address, to_address, text)
