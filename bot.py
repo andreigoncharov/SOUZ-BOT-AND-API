@@ -1047,7 +1047,7 @@ async def reff_link(message):
                         c[2].append(client)
                         break
         for client in sorted_clients:
-            text += f"{re.sub(' +', ' ', str(client[0]).strip())}: "
+            text += f"{re.sub(' +', ' ', str(client[1]).strip())}: "
             checkins = await RDB.get_all_checkins(client[0], loop)
             if len(checkins) > 0:
                 formatted_docnums = ", ".join([f"'{x[0]}'" for x in checkins])
@@ -1061,23 +1061,13 @@ async def reff_link(message):
 
                 for key, max_value in max_values.items():
                     text += f"маршрут {key} точка {max_value} в --- \n \n"
+            else:
+                text += "нет чекинов \n \n"
 
-        print(11111, text)
-
-            # routes = []
-            # for client in clients:
-            #     if client[3] not in routes:
-            #         if routes != []:
-            #             text += '\n ---------- \n '
-            #         last_checkin = find_last_checkin(clients, client[3])
-            #         text += f'''\n Маршрут: {client[3]}; Последний чекин: '''
-            #         text += f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5] if last_checkin[1] != 'None' else '-----'}" if last_checkin != -1 else '-----'
-            #         text += ' \n'
-            #         if is_all_points(clients, client[3]):
-            #             text += f'\n {msg.all_points_complete} \n '
-            #         routes.append(client[3])
         await bot.delete_message(tel_id, mess.message_id)
-        print(text)
+        await bot.send_message(tel_id, text,
+                               reply_markup=mk.main_menu(tel_id), parse_mode='html',
+                               disable_notification=True)
     else:
         await bot.send_message(tel_id, msg.no_clients_today,
                                reply_markup=mk.main_menu(tel_id), parse_mode='html',
