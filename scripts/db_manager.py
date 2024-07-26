@@ -270,7 +270,7 @@ WHERE [id] = '{expeditor_id}';""")
         FROM 
             [Orders].[dbo].[ExpeditorCheckouts]
         WHERE 
-            [DocNo] = '{docno}'""")
+            [DockNo] = '{docno}'""")
         rows = cursor.fetchall()
         conn.close()
         return rows

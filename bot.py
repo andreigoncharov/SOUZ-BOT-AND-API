@@ -1066,8 +1066,7 @@ async def reff_link(message):
                 text += "нет чекинов \n \n"
 
         await bot.delete_message(tel_id, mess.message_id)
-        await bot.send_message(tel_id, text,
-                               reply_markup=mk.main_menu(tel_id), parse_mode='html',
+        await bot.send_message(tel_id, text, parse_mode='html',
                                disable_notification=True)
     else:
         await bot.send_message(tel_id, msg.no_clients_today,
