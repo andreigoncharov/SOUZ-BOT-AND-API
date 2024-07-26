@@ -193,7 +193,7 @@ WHERE LTRIM(RTRIM([ID])) = '{agent_id}';""")
 FROM 
     [Orders].[dbo].[ExpeditorCheckouts]
 WHERE 
-    CAST([TimeStamp] AS DATE) = CAST(DATEADD(DAY, -1, GETDATE()) AS DATE)""")#CAST(DATEADD(DAY, -2, GETDATE()) AS DATE) AND [Status] IN ('SA', 'R')
+    [Status] IN ('SA', 'R')""")  # CAST([TimeStamp] AS DATE) = CAST(DATEADD(DAY, -1, GETDATE()) AS DATE) AND
         rows = cursor.fetchall()
         conn.close()
         return rows
