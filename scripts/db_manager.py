@@ -265,7 +265,7 @@ WHERE [id] = '{expeditor_id}';""")
             ON 
                 _1SJOURN.IDDOC = DH640.IDDOC
             WHERE 
-                _1SJOURN.DOCNO IN ({formatted_docnums})
+                _1SJOURN.DOCNO IN ({docnums})
             AND 
                 DH640.SP1197 = (SELECT MAX(CAST(SP1197 AS INT)) FROM [192.168.3.18].[SOUZ].dbo.[DH640] WHERE SP1797 = DH640.SP1797)
         """)
