@@ -1035,7 +1035,6 @@ async def reff_link(message):
     mess = await bot.send_message(tel_id, text,
                                   disable_notification=True, parse_mode='html')
     clients = await RDB.get_expeditors(loop)
-    print(clients)
     if len(clients) > 0:
         sorted_clients = []
         for client in clients:
@@ -1047,9 +1046,8 @@ async def reff_link(message):
                         c[2].append(client)
                         break
         for client in sorted_clients:
-            print(client)
-            clients = await RDB.get_expeditor_clients(client[0], loop)
-            print(clients)
+            checkins = await RDB.get_all_checkins(client[0], loop)
+            print(checkins)
             # await bot.delete_message(tel_id, mess.message_id)
             # text = msg.expeditor_header_with_phone.format(
             #     f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
@@ -1074,3 +1072,8 @@ async def reff_link(message):
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
+
+# получаем всех экспедиторов
+# смотрим есть что-то в ExCh или нет
+# если есть, тогда из DH640 смотрим точку по IDDOC, который получаем из _1SJOURN по номеру накладной
+# ? потом нужно как-то получить количество точек у экспедитора ?

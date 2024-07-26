@@ -228,6 +228,20 @@ WHERE [id] = '{expeditor_id}';""")
         conn.close()
         return rows
 
+    async def get_all_checkins(self, expeditor_id, loop):
+        conn = self.get_conn(loop)
+        cursor = conn.cursor()
+        cursor.execute(f"""SELECT 
+            [DockNo], 
+        FROM 
+            [Orders].[dbo].[ExpeditorCheckouts]
+        WHERE 
+            CAST([TimeStamp] AS DATE) = CAST(GETDATE() AS DATE) AND [ExpeditorId] = '{expeditor_id}'""")
+        rows = cursor.fetchall()
+        conn.close()
+        return rows
+
+
 class UsersDbManager:
     @staticmethod
     def clear():
