@@ -247,7 +247,7 @@ WHERE [id] = '{expeditor_id}';""")
         cursor.execute(f"""SELECT 
             [IDDOC] FROM [192.168.3.18].[SOUZ].dbo.[_1SJOURN]
         WHERE 
-            [DOCNUM] IN ({docnums})""")
+            [DOCNO] IN ({docnums})""")
         _1s_rows = cursor.fetchall()
         print(_1s_rows)
         # cursor.execute(f"""SELECT CAST(SP1797 AS INT), CAST(SP1197 AS INT) FROM [192.168.3.18].[SOUZ].dbo.[DH640]
