@@ -23,13 +23,13 @@ import schedule
 """
 Основные настройки
 """
-smtp_user = 'andreigoncharov16072001@gmail.com'  # аккаунт с которого будут идти письма
-smtp_password = 'bxxw wjhf slmo ukox'  # пароль аккаунта с которого будут идти письма
+smtp_user = 'gm2013@ukr.net'  # аккаунт с которого будут идти письма
+smtp_password = 'xnjk lxfd wxbe ouut'  # пароль аккаунта с которого будут идти письма
 
-from_address = 'andreigoncharov16072001@gmail.com'  # адрес с которого отправлять
+from_address = 'gm2013@ukr.net'  # адрес с которого отправлять
 to_address = 'logist@union.kh.ua'  # адрес куда отправлять
 
-time_to_send = "20:10"  # время отправки в формате ЧЧ:ММ
+time_to_send = "13:10"  # время отправки в формате ЧЧ:ММ
 """
 =========================================================
 """
