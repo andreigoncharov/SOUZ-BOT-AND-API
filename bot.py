@@ -1062,7 +1062,7 @@ async def reff_link(message):
                 for key, max_value in max_values.items():
                     text += f"маршрут {key} точка {max_value} в --- \n \n"
 
-        print(text)
+        print(11111, text)
 
             # routes = []
             # for client in clients:
