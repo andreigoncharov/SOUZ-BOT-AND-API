@@ -15,7 +15,7 @@ from scripts.db_manager import RemoteDbManager
 
 loop = asyncio.get_event_loop()
 
-# rdb = RemoteDbManager()
+rdb = RemoteDbManager()
 
 smtp_server = 'smtp.gmail.com'
 smtp_port = 587
