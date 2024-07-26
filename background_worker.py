@@ -29,7 +29,7 @@ smtp_password = 'bxxw wjhf slmo ukox'  # пароль аккаунта с кот
 from_address = 'andreigoncharov16072001@gmail.com'  # адрес с которого отправлять
 to_address = 'andreigoncharov1009@gmail.com'  # адрес куда отправлять
 
-time_to_send = "19:15"  # время отправки в формате ЧЧ:ММ
+time_to_send = "20:10"  # время отправки в формате ЧЧ:ММ
 """
 =========================================================
 """
@@ -158,8 +158,9 @@ def start():
                 asyncio.run(bot.send_message(420404892, f"Ошибка отчета!\n \n {traceback.format_exc()}"))
 
 
-schedule.every().day.at(time_to_send).do(start)
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# schedule.every().day.at(time_to_send).do(start)
+#
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+start()
