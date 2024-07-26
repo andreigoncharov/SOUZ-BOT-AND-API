@@ -254,30 +254,18 @@ WHERE [id] = '{expeditor_id}';""")
         # cursor.execute(f"""SELECT CAST(SP1797 AS INT), CAST(SP1197 AS INT) FROM [192.168.3.18].[SOUZ].dbo.[DH640]
         #                  WHERE [iddoc] IN ({formatted_docnums});""")
         cursor.execute(f"""
-            WITH MaxSP1197 AS (
-                SELECT 
-                    SP1797,
-                    MAX(CAST(SP1197 AS INT)) AS MaxSP1197
-                FROM 
-                    [192.168.3.18].[SOUZ].dbo.[DH640]
-                GROUP BY 
-                    SP1797
-            )
             SELECT 
-                _1SJOURN.DOCNO,
-                CAST(DH640.SP1797 AS INT) AS SP1797,
-                MaxSP1197.MaxSP1197 AS SP1197
+                _1SJOURN.DOCNO, 
+                CAST(DH640.SP1797 AS INT) AS SP1797, 
+                CAST(DH640.SP1197 AS INT) AS SP1197
             FROM 
                 [192.168.3.18].[SOUZ].dbo.[_1SJOURN] AS _1SJOURN
             INNER JOIN 
                 [192.168.3.18].[SOUZ].dbo.[DH640] AS DH640
-                ON _1SJOURN.IDDOC = DH640.IDDOC
-            INNER JOIN 
-                MaxSP1197
-                ON DH640.SP1797 = MaxSP1197.SP1797
-                AND CAST(DH640.SP1197 AS INT) = MaxSP1197.MaxSP1197
+            ON 
+                _1SJOURN.IDDOC = DH640.IDDOC
             WHERE 
-                _1SJOURN.DOCNO IN ({docnums})
+                _1SJOURN.DOCNO IN ({docnums});
         """)
         rows = cursor.fetchall()
         print(rows)
