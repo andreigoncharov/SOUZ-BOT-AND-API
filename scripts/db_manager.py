@@ -277,7 +277,7 @@ WHERE [id] = '{expeditor_id}';""")
                 ON DH640.SP1797 = MaxSP1197.SP1797
                 AND CAST(DH640.SP1197 AS INT) = MaxSP1197.MaxSP1197
             WHERE 
-                _1SJOURN.DOCNO IN ({formatted_docnums})
+                _1SJOURN.DOCNO IN ({docnums})
         """)
         rows = cursor.fetchall()
         print(rows)
