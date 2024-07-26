@@ -3,15 +3,36 @@ import datetime
 import re
 
 import smtplib
+import time
+import traceback
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 import os
+
+from aiogram import Bot
 from openpyxl import Workbook
 from openpyxl.styles import Alignment
 
 from scripts.db_manager import RemoteDbManager
+from scripts.config import *
+
+import schedule
+
+"""
+Основные настройки
+"""
+smtp_user = 'andreigoncharov16072001@gmail.com'  # аккаунт с которого будут идти письма
+smtp_password = 'bxxw wjhf slmo ukox'  # пароль аккаунта с которого будут идти письма
+
+from_address = 'andreigoncharov16072001@gmail.com'  # адрес с которого отправлять
+to_address = 'andreigoncharov1009@gmail.com'  # адрес куда отправлять
+
+time_to_send = "19:15"  # время отправки в формате ЧЧ:ММ
+"""
+=========================================================
+"""
 
 loop = asyncio.get_event_loop()
 
@@ -19,12 +40,6 @@ rdb = RemoteDbManager()
 
 smtp_server = 'smtp.gmail.com'
 smtp_port = 587
-smtp_user = 'andreigoncharov16072001@gmail.com'
-smtp_password = 'bxxw wjhf slmo ukox'
-
-# Адреса отправителя и получателя
-from_address = 'andreigoncharov16072001@gmail.com'
-to_address = 'andreigoncharov1009@gmail.com'
 
 
 async def send_email(file_name, date: str, isEmpty=False):
@@ -32,8 +47,6 @@ async def send_email(file_name, date: str, isEmpty=False):
     msg['From'] = from_address
     msg['To'] = to_address
     msg['Subject'] = f'Отчет за {date}'
-
-    # Текст письма
     if isEmpty:
         body = f'{date} не было отказов или отгрузок с корректировкой!'
         msg.attach(MIMEText(body, 'plain'))
@@ -54,7 +67,6 @@ async def send_email(file_name, date: str, isEmpty=False):
         text = msg.as_string()
         server.sendmail(from_address, to_address, text)
         server.quit()
-        print("Email sent successfully")
     except Exception as e:
         print(f"Failed to send email: {e}")
 
@@ -71,7 +83,9 @@ async def create_excel_file(expeditors, expeditor_names, customer_names):
         merge_rows.append(row_counter)
         row_counter += 1
         for order in value:
-            ws.append([f"{re.sub(' +', ' ', str(customer_names.get(order[0])[0][1]).strip())}", order[1], order[3], order[4], order[2]])
+            ws.append(
+                [f"{re.sub(' +', ' ', str(customer_names.get(order[0])[0][1]).strip())}", order[1], order[3], order[4],
+                 order[2]])
             row_counter += 1
         ws.append([])
         row_counter += 1
@@ -129,4 +143,23 @@ async def main():
     else:
         await send_email(f"{formatted_date}.xlsx", formatted_date, isEmpty=True)
 
-asyncio.run(main())
+
+def start():
+    try:
+        asyncio.run(main())
+    except:
+        try:
+            asyncio.run(main())
+        except:
+            try:
+                asyncio.run(main())
+            except:
+                bot = Bot(TOKEN)
+                asyncio.run(bot.send_message(420404892, f"Ошибка отчета!\n \n {traceback.format_exc()}"))
+
+
+schedule.every().day.at(time_to_send).do(start)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
