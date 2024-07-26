@@ -23,13 +23,13 @@ import schedule
 """
 Основные настройки
 """
-smtp_user = 'gm2013@ukr.net'  # аккаунт с которого будут идти письма
-smtp_password = 'xnjk lxfd wxbe ouut'  # пароль аккаунта с которого будут идти письма
+smtp_user = 'hryhorovych.maksym@gmail.com'  # аккаунт с которого будут идти письма
+smtp_password = 'hbld fneu hvua hf'  # пароль аккаунта с которого будут идти письма
 
-from_address = 'gm2013@ukr.net'  # адрес с которого отправлять
+from_address = 'hryhorovych.maksym@gmail.com'  # адрес с которого отправлять
 to_address = 'logist@union.kh.ua'  # адрес куда отправлять
 
-time_to_send = "13:10"  # время отправки в формате ЧЧ:ММ
+time_to_send = "06:00"  # время отправки в формате ЧЧ:ММ
 """
 =========================================================
 """
@@ -157,9 +157,9 @@ def start():
                 bot = Bot(TOKEN)
                 asyncio.run(bot.send_message(420404892, f"Ошибка отчета!\n \n {traceback.format_exc()}"))
 
-
-schedule.every().day.at(time_to_send).do(start)
-
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# schedule.every().day.at(time_to_send).do(start)
+#
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
+start()
