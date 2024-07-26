@@ -219,12 +219,9 @@ WHERE [id] = '{expeditor_id}';""")
     async def get_point_by_dock(self, doc, loop):
         conn = self.get_conn(loop)
         cursor = conn.cursor()
-        print(f"""SELECT [IDDOC] FROM [192.168.3.18].[SOUZ].dbo.[_1SJOURN]
-         WHERE [DOCNO] = '{doc}';""")
         cursor.execute(f"""SELECT [IDDOC] FROM [192.168.3.18].[SOUZ].dbo.[_1SJOURN]
          WHERE [DOCNO] = '{doc}';""")
         _1s_rows = cursor.fetchall()
-        print(_1s_rows)
         cursor.execute(f"""SELECT CAST(SP1797 AS INT), CAST(SP1197 AS INT) FROM [192.168.3.18].[SOUZ].dbo.[DH640]
                  WHERE [iddoc] = '{_1s_rows[0][0]}';""")
         rows = cursor.fetchall()
