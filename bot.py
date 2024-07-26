@@ -945,8 +945,8 @@ async def choose_language(call: types.CallbackQuery):
             text += f'\n {msg.route_header_html.format(client[3])} \n '
             text += f'''\n {msg.last_checkin.format(f"точка {last_checkin[0]} в {last_checkin[1].split()[1][:5] if last_checkin[1] != 'None' else '-----'}"
                                                     if last_checkin != -1 else '-----')} \n '''
-            if is_all_points(clients, client[3]):
-                text += f'\n {msg.all_points_complete} \n '
+            # if is_all_points(clients, client[3]):
+            #     text += f'\n {msg.all_points_complete} \n '
             routes.append(client[3])
         client_name = re.sub(' +', ' ', str(client[2]).strip())
         # client_id = re.sub(' +', ' ', str(client[3]).strip())
@@ -1078,8 +1078,3 @@ async def reff_link(message):
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
-
-# получаем всех экспедиторов
-# смотрим есть что-то в ExCh или нет
-# если есть, тогда из DH640 смотрим точку по IDDOC, который получаем из _1SJOURN по номеру накладной
-# ? потом нужно как-то получить количество точек у экспедитора ?

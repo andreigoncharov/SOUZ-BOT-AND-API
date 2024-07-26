@@ -3,8 +3,8 @@ from aiogram.types import reply_keyboard, inline_keyboard, ReplyKeyboardMarkup, 
 phone_number = ReplyKeyboardMarkup(resize_keyboard=True). \
     add(KeyboardButton(text='Отправить номер телефона', request_contact=True))
 
-ADMINS = [420404892, 301735028]  #['AndreiGoncharov', 'maksym_hryhorovych']
-LOW_ADMINS = [650989290, 5026697380]
+ADMINS = [420404892, 301735028, 835344013]  #['AndreiGoncharov', 'maksym_hryhorovych']
+LOW_ADMINS = [650989290, 5026697380, ]
 
 
 def main_menu(tel_id):
