@@ -1047,7 +1047,11 @@ async def reff_link(message):
                         break
         for client in sorted_clients:
             checkins = await RDB.get_all_checkins(client[0], loop)
-            print(checkins)
+            if len(checkins) > 0:
+                formatted_docnums = ", ".join([f"'{x[0]}'" for x in checkins])
+                infos = await RDB.get_info_by_docnum(formatted_docnums, loop)
+
+
             # await bot.delete_message(tel_id, mess.message_id)
             # text = msg.expeditor_header_with_phone.format(
             #     f"{re.sub(' +', ' ', str(clients[0][0]).strip())}", normalize_phone_number_plus(str(clients[0][7])))
