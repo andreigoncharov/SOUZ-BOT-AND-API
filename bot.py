@@ -683,8 +683,9 @@ async def choose_language(call: types.CallbackQuery):
     await UsersDbManager.update_context(tel_id, f'wait_phone_number-{agent_id}', loop)
 
 
-@dp.message_handler(lambda message: str(UsersDbManager.sync_get_context(message.chat.id)).startswith('wait_phone_number'),
-                    content_types=['text'])
+@dp.message_handler(
+    lambda message: str(UsersDbManager.sync_get_context(message.chat.id)).startswith('wait_phone_number'),
+    content_types=['text'])
 async def seller_registration_wait_patronymic(message):
     tel_id = message.chat.id
     agent_id = await UsersDbManager.get_context(tel_id, loop)
@@ -774,7 +775,6 @@ async def choose_language(call: types.CallbackQuery):
     text = f'''✅ Агент <b>{agent.descr} ({agent.id_in_db}) - {agent.phone}</b> исключен!'''
     await bot.delete_message(tel_id, message_id=call.message.message_id)
     await bot.send_message(tel_id, text, reply_markup=mk.admin_menu, disable_notification=True, parse_mode='html')
-
 
 
 @dp.callback_query_handler(lambda call: call.data.startswith('notconfirmKick*'))
@@ -1047,7 +1047,7 @@ async def reff_link(message):
                     if c[0] == client[0]:
                         c[2].append(client)
                         break
-        sorted_clients = sorted(sorted_clients, lambda x:x[1])
+        sorted_clients = sorted(sorted_clients, key=lambda x: x[1])
         for client in sorted_clients:
             text += f"<u><b>{re.sub(' +', ' ', str(client[1]).strip())}:</b></u> "
             checkins = await RDB.get_all_checkins(client[0], loop)
@@ -1077,6 +1077,7 @@ async def reff_link(message):
         await bot.send_message(tel_id, msg.no_clients_today,
                                reply_markup=mk.main_menu(tel_id), parse_mode='html',
                                disable_notification=True)
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
