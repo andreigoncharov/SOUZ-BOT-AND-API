@@ -888,6 +888,7 @@ async def reff_link(message):
                     if c[0] == client[0]:
                         c[2].append(client)
                         break
+        sorted_clients = sorted(sorted_clients, key=lambda x: x[1])
         keyb = InlineKeyboardMarkup()
         for client in sorted_clients:
             keyb.add(
