@@ -1047,6 +1047,7 @@ async def reff_link(message):
                     if c[0] == client[0]:
                         c[2].append(client)
                         break
+        sorted_clients = sorted(sorted_clients, lambda x:x[1])
         for client in sorted_clients:
             text += f"<u><b>{re.sub(' +', ' ', str(client[1]).strip())}:</b></u> "
             checkins = await RDB.get_all_checkins(client[0], loop)
