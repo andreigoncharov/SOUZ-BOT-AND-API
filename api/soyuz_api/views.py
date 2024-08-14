@@ -83,7 +83,7 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
             data = json.loads(request.body)
             text = ''
             if len(data) > 0:
-                text = f'<b>Логи от экспедитора:</b> {data[0]["expeditorSurname"]}({data[0]["expeditorId"]})'
+                text = f'<b>Логи от экспедитора:</b> {data[0]["expeditorSurname"]} ({data[0]["expeditorId"]})'
                 for d in data:
                     text += f'''
                     
@@ -101,7 +101,7 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
                     '''
             res_text = split_message(text)
             bot = Bot("7159327016:AAF4OFAMhiayZJLJw4ky2SI80vjehbMIi-Y")
-            tel_id = 420404892
+            tel_id = 301735028
             if len(res_text) == 1:
                 asyncio.run(bot.send_message(tel_id, res_text[0], parse_mode='html'))
             else:
