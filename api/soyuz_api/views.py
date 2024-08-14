@@ -81,6 +81,7 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
         try:
             data = json.loads(request.body)
             text = ''
+            print(data)
             if len(data) > 0:
                 text = f'<b>Экспедитор:</b> {data["expeditorId"]}'
                 for d in data:
