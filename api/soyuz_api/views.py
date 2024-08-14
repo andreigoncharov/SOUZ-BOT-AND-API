@@ -74,3 +74,31 @@ class TestView(PublicApiMixin, ApiErrorsMixin, APIView):
         except Exception as e:
             print(f"An error occurred: {e}")
             return Response({"error": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            text = ''
+            if len(data) > 0:
+                text = f'<b>Экспедитор:</b> {data["expeditorId"]}'
+                for d in data:
+                    text += f'''
+                    
+<b>Запрос:</b> {d["request"]}
+
+<b>Дата и время:</b> {d["datetime"]}
+
+<b>Код ответа:</b> {d["statusCode"]}           
+
+<b>Тело ответа:</b> {d["responseBody"]}
+
+<b>Тело запроса:</b> {d["body"]} 
+                    '''
+            print(text)
+            return JsonResponse({}, json_dumps_params={'ensure_ascii': False},
+                                status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return Response({"error": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
