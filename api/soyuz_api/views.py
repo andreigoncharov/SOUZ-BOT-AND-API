@@ -95,7 +95,9 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
 
 <b>Тело ответа:</b> {d["responseBody"]}
 
-<b>Тело запроса:</b> {d["body"]} 
+<b>Тело запроса:</b> {d["body"]}
+
+--------- 
                     '''
             res_text = split_message(text)
             bot = Bot("7159327016:AAF4OFAMhiayZJLJw4ky2SI80vjehbMIi-Y")
