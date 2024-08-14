@@ -83,7 +83,7 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
             data = json.loads(request.body)
             text = ''
             if len(data) > 0:
-                text = f'<b>Логи</b> \n \n <b>Экспедитор:</b> {data[0]["expeditorId"]}'
+                text = f'<b>Логи от экспедитора:</b> {data[0]["expeditorSurname"]}({data[0]["expeditorId"]})'
                 for d in data:
                     text += f'''
                     
