@@ -9,6 +9,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from aiogram import Bot
 
 from .mixins import PublicApiMixin, ApiErrorsMixin
 from .models import ExpeditorCheckouts
@@ -82,7 +83,7 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
             data = json.loads(request.body)
             text = ''
             if len(data) > 0:
-                text = f'<b>Экспедитор:</b> {data[0]["expeditorId"]}'
+                text = f'<b>Логи</b> \n \n <b>Экспедитор:</b> {data[0]["expeditorId"]}'
                 for d in data:
                     text += f'''
                     
@@ -96,9 +97,32 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
 
 <b>Тело запроса:</b> {d["body"]} 
                     '''
-            print(text)
+            res_text = split_message(text)
+            bot = Bot("7159327016:AAF4OFAMhiayZJLJw4ky2SI80vjehbMIi-Y")
+            tel_id = 420404892
+            if len(res_text) == 1:
+                asyncio.run(bot.send_message(tel_id, res_text[0], parse_mode='html'))
+            else:
+                for t in res_text:
+                    if t != res_text[len(res_text) - 1]:
+                        asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
+                    else:
+                        asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
             return JsonResponse({}, json_dumps_params={'ensure_ascii': False},
                                 status=status.HTTP_200_OK)
         except Exception as e:
             print(f"An error occurred: {e}")
             return Response({"error": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+def split_message(text):
+    messages = []
+    while len(text) > 4096:
+        split_pos = text.rfind('\n', 0, 4096)
+        if split_pos == -1:
+            split_pos = 4096
+        messages.append(text[:split_pos])
+        text = text[split_pos:]
+    messages.append(text)
+    return messages
