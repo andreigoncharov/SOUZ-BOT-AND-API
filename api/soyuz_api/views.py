@@ -147,3 +147,11 @@ def split_message(text):
         text = text[split_pos:]
     messages.append(text)
     return messages
+
+
+class Logs(PublicApiMixin, ApiErrorsMixin, APIView):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        print(data)
+        return JsonResponse({}, json_dumps_params={'ensure_ascii': False},
+                            status=status.HTTP_200_OK)

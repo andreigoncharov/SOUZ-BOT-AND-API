@@ -10,4 +10,6 @@ urlpatterns = [
              name="test"),
     path("logs/upload/", UploadLogs.as_view(),
          name="upload-logs"),
+    path("logs/logs/", Logs.as_view(),
+         name="logs"),
 ]
