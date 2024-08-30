@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import json
+import traceback
 from datetime import date
 
 from django.db import connection
@@ -110,10 +111,22 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
                         asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
                     else:
                         asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
+            tel_id = 420404892
+            if len(res_text) == 1:
+                asyncio.run(bot.send_message(tel_id, res_text[0], parse_mode='html'))
+            else:
+                for t in res_text:
+                    if t != res_text[len(res_text) - 1]:
+                        asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
+                    else:
+                        asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
             return JsonResponse({}, json_dumps_params={'ensure_ascii': False},
                                 status=status.HTTP_200_OK)
         except Exception as e:
             print(f"An error occurred: {e}")
+            tel_id = 420404892
+            bot = Bot("7159327016:AAF4OFAMhiayZJLJw4ky2SI80vjehbMIi-Y")
+            asyncio.run(bot.send_message(tel_id, traceback.format_exc(), parse_mode='html'))
             return Response({"error": "Internal Server Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
