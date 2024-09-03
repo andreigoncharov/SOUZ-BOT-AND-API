@@ -84,49 +84,49 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
             data = json.loads(request.body)
             text = ''
             print(data)
-            if len(data) > 0:
-                text = f'<b>Логи от экспедитора:</b> {data[0]["expeditorSurname"]} ({data[0]["expeditorId"]})'
-                for d in data:
-                    text += f'''
-                    
-<b>Запрос:</b> {d["request"]}
-
-<b>Дата и время:</b> {d["datetime"]}
-
-<b>Код ответа:</b> {d["statusCode"]}           
-
-<b>Тело ответа:</b> {d["responseBody"]}
-
-<b>Тело запроса:</b> {d["body"]}
-
---------- 
-                    '''
-            res_text = split_message(text)
-            bot = Bot("7159327016:AAF4OFAMhiayZJLJw4ky2SI80vjehbMIi-Y")
-            tel_id = 301735028
-            tel_id2 = 420404892
-            if len(res_text) == 1:
-                asyncio.run(bot.send_message(tel_id, res_text[0], parse_mode='html'))
-                asyncio.run(bot.send_message(tel_id2, res_text[0], parse_mode='html'))
-            else:
-                for t in res_text:
-                    if t != res_text[len(res_text) - 1]:
-                        asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
-                        asyncio.run(bot.send_message(tel_id2, t, parse_mode='html'))
-                    else:
-                        asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
-                        asyncio.run(bot.send_message(tel_id2, t, parse_mode='html'))
-            if len(res_text) == 1:
-                asyncio.run(bot.send_message(tel_id, res_text[0], parse_mode='html'))
-                asyncio.run(bot.send_message(tel_id2, res_text[0], parse_mode='html'))
-            else:
-                for t in res_text:
-                    if t != res_text[len(res_text) - 1]:
-                        asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
-                        asyncio.run(bot.send_message(tel_id2, t, parse_mode='html'))
-                    else:
-                        asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
-                        asyncio.run(bot.send_message(tel_id2, t, parse_mode='html'))
+#             if len(data) > 0:
+#                 text = f'<b>Логи от экспедитора:</b> {data[0]["expeditorSurname"]} ({data[0]["expeditorId"]})'
+#                 for d in data:
+#                     text += f'''
+#
+# <b>Запрос:</b> {d["request"]}
+#
+# <b>Дата и время:</b> {d["datetime"]}
+#
+# <b>Код ответа:</b> {d["statusCode"]}
+#
+# <b>Тело ответа:</b> {d["responseBody"]}
+#
+# <b>Тело запроса:</b> {d["body"]}
+#
+# ---------
+#                     '''
+#             res_text = split_message(text)
+#             bot = Bot("7159327016:AAF4OFAMhiayZJLJw4ky2SI80vjehbMIi-Y")
+#             tel_id = 301735028
+#             tel_id2 = 420404892
+#             if len(res_text) == 1:
+#                 asyncio.run(bot.send_message(tel_id, res_text[0], parse_mode='html'))
+#                 asyncio.run(bot.send_message(tel_id2, res_text[0], parse_mode='html'))
+#             else:
+#                 for t in res_text:
+#                     if t != res_text[len(res_text) - 1]:
+#                         asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
+#                         asyncio.run(bot.send_message(tel_id2, t, parse_mode='html'))
+#                     else:
+#                         asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
+#                         asyncio.run(bot.send_message(tel_id2, t, parse_mode='html'))
+#             if len(res_text) == 1:
+#                 asyncio.run(bot.send_message(tel_id, res_text[0], parse_mode='html'))
+#                 asyncio.run(bot.send_message(tel_id2, res_text[0], parse_mode='html'))
+#             else:
+#                 for t in res_text:
+#                     if t != res_text[len(res_text) - 1]:
+#                         asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
+#                         asyncio.run(bot.send_message(tel_id2, t, parse_mode='html'))
+#                     else:
+#                         asyncio.run(bot.send_message(tel_id, t, parse_mode='html'))
+#                         asyncio.run(bot.send_message(tel_id2, t, parse_mode='html'))
             return JsonResponse({}, json_dumps_params={'ensure_ascii': False},
                                 status=status.HTTP_200_OK)
         except Exception as e:
