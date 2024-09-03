@@ -83,6 +83,7 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
         try:
             data = json.loads(request.body)
             text = ''
+            print(data)
             if len(data) > 0:
                 text = f'<b>Логи от экспедитора:</b> {data[0]["expeditorSurname"]} ({data[0]["expeditorId"]})'
                 for d in data:
@@ -138,15 +139,16 @@ class UploadLogs(PublicApiMixin, ApiErrorsMixin, APIView):
 
 
 def split_message(text):
-    messages = []
-    while len(text) > 4096:
-        split_pos = text.rfind('\n', 0, 4096)
-        if split_pos == -1:
-            split_pos = 4096
-        messages.append(text[:split_pos])
-        text = text[split_pos:]
-    messages.append(text)
-    return messages
+    def message_chunks(text):
+        while len(text) > 4096:
+            split_pos = text.rfind('\n', 0, 4096)
+            if split_pos == -1:
+                split_pos = 4096
+            yield text[:split_pos]
+            text = text[split_pos:]
+        yield text
+
+    return list(message_chunks(text))
 
 
 class Logs(PublicApiMixin, ApiErrorsMixin, APIView):
